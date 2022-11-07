@@ -14,6 +14,7 @@ public class FileSystemHelper {
 				}
 				subfile.delete();
 			}
+			file.delete();
 		}
 	}
 
