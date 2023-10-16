@@ -13,7 +13,7 @@ import javax.naming.ConfigurationException;
 
 public final class LogHelper {
 
-	public static void changeLogLevel(final String logLevel) throws ConfigurationException {
+	public static void changeJulLogLevel(final String logLevel) throws ConfigurationException {
 		final Logger rootLogger = Logger.getLogger("");
 		Level targetLevel = Level.INFO;
 		switch (logLevel) {
@@ -52,6 +52,11 @@ public final class LogHelper {
 		for (final Handler handler : rootLogger.getHandlers()) {
 			handler.setLevel(targetLevel);
 		}
+	}
+
+	@Deprecated
+	public static void changeLogLevel(final String logLevel) throws ConfigurationException {
+		changeJulLogLevel(logLevel);
 	}
 
 	public static String stackTraceToString(final Throwable throwable) {
