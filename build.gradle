@@ -6,13 +6,13 @@ buildscript {
   }
   dependencies {
     classpath "com.gorylenko.gradle-git-properties:gradle-git-properties:2.4.1"
-    classpath 'de.undercouch:gradle-download-task:5.3.0'
+    classpath 'de.undercouch:gradle-download-task:5.3.1'
   }
 }
 
 description = "Rossonet's static methods"
 group = 'net.rossonet.commons'
-version = '0.3.3'
+version = '0.4.0'
 
 ext {
 	sourceCompatibility = 1.8
@@ -35,10 +35,10 @@ apply plugin: 'signing'
 apply plugin: 'maven-publish'
 
 dependencies {
-  api group: 'org.json', name: 'json', version: '20211205'
-  testImplementation 'org.junit.jupiter:junit-jupiter-api:5.9.1'
+  api group: 'org.json', name: 'json', version: '20230618'
+  testImplementation 'org.junit.jupiter:junit-jupiter-api:5.10.0'
   testImplementation group: 'com.ginsberg', name: 'junit5-system-exit', version: '1.1.2'
-  testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.9.1'
+  testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.10.0'
 }
 
 task eclipseClosedDependencies {}
@@ -65,7 +65,8 @@ java {
 
 gitProperties {
 	failOnNoGitDirectory = false
-	customProperty 'component', "${project.name}"
+	customProperty 'java-component', "${project.name}"
+	customProperty 'java-version', "${project.version}"
 	dateFormat = "yyyy-MM-dd HH:mm:ssZ"
 	dateFormatTimeZone = 'GMT'
 }
