@@ -2,17 +2,15 @@ package org.rossonet.utils;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
-import java.io.File;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.Serializable;
-import java.nio.file.Files;
-import java.nio.file.Paths;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.Base64;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -43,17 +41,6 @@ public final class TextHelper {
 		final SecretKeySpec k = new SecretKeySpec(key, ENCRYPTION_ALGORITHM);
 		c.init(Cipher.DECRYPT_MODE, k);
 		return c.doFinal(encryptedData);
-	}
-
-	public static void deleteDirectory(final File file) {
-		if (Files.exists(Paths.get(file.getAbsolutePath()))) {
-			for (final File subfile : file.listFiles()) {
-				if (subfile.isDirectory()) {
-					deleteDirectory(subfile);
-				}
-				subfile.delete();
-			}
-		}
 	}
 
 	public static byte[] encryptData(final byte[] dataToEncrypt, final byte[] key) throws IllegalBlockSizeException,
@@ -91,6 +78,23 @@ public final class TextHelper {
 		}
 		return map;
 
+	}
+
+	public static String joinCollection(Collection<?> data, String separator) {
+		if (data.isEmpty()) {
+			return "";
+		}
+		final StringBuilder result = new StringBuilder();
+		boolean first = true;
+		for (final Object d : data.toArray()) {
+			if (first) {
+				first = false;
+			} else {
+				result.append(separator);
+			}
+			result.append(d);
+		}
+		return result.toString();
 	}
 
 	@SuppressWarnings("unchecked")
