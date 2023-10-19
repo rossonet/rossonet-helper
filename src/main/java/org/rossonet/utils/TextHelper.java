@@ -35,18 +35,30 @@ public final class TextHelper {
 		return stringBuffer.toString();
 	}
 
-	public static byte[] decryptData(final byte[] encryptedData, final byte[] key) throws NoSuchAlgorithmException,
-			NoSuchPaddingException, InvalidKeyException, IllegalBlockSizeException, BadPaddingException {
-		final Cipher c = Cipher.getInstance(ENCRYPTION_ALGORITHM);
-		final SecretKeySpec k = new SecretKeySpec(key, ENCRYPTION_ALGORITHM);
+	public static byte[] decryptData(final byte[] encryptedData, final byte[] key) throws InvalidKeyException,
+			NoSuchAlgorithmException, NoSuchPaddingException, IllegalBlockSizeException, BadPaddingException {
+		return decryptData(encryptedData, key, ENCRYPTION_ALGORITHM);
+	}
+
+	public static byte[] decryptData(final byte[] encryptedData, final byte[] key, String encryptionAlgorithm)
+			throws NoSuchAlgorithmException, NoSuchPaddingException, InvalidKeyException, IllegalBlockSizeException,
+			BadPaddingException {
+		final Cipher c = Cipher.getInstance(encryptionAlgorithm);
+		final SecretKeySpec k = new SecretKeySpec(key, encryptionAlgorithm);
 		c.init(Cipher.DECRYPT_MODE, k);
 		return c.doFinal(encryptedData);
 	}
 
 	public static byte[] encryptData(final byte[] dataToEncrypt, final byte[] key) throws IllegalBlockSizeException,
 			BadPaddingException, NoSuchAlgorithmException, NoSuchPaddingException, InvalidKeyException {
-		final Cipher c = Cipher.getInstance(ENCRYPTION_ALGORITHM);
-		final SecretKeySpec k = new SecretKeySpec(key, ENCRYPTION_ALGORITHM);
+		return encryptData(dataToEncrypt, key, ENCRYPTION_ALGORITHM);
+	}
+
+	public static byte[] encryptData(final byte[] dataToEncrypt, final byte[] key, String encryptionAlgorithm)
+			throws IllegalBlockSizeException, BadPaddingException, NoSuchAlgorithmException, NoSuchPaddingException,
+			InvalidKeyException {
+		final Cipher c = Cipher.getInstance(encryptionAlgorithm);
+		final SecretKeySpec k = new SecretKeySpec(key, encryptionAlgorithm);
 		c.init(Cipher.ENCRYPT_MODE, k);
 		return c.doFinal(dataToEncrypt);
 	}

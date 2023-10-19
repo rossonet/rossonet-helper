@@ -29,84 +29,95 @@ import org.rossonet.ext.states.api.State;
 import org.rossonet.ext.states.api.Transition;
 
 /**
- * FSM transition builder : this class should be used to build FSM transition instances:
+ * FSM transition builder : this class should be used to build FSM transition
+ * instances:
  *
  * <ul>
- *     <li>Source and target states must be declared in FSM states set.</li>
- *     <li>Source and target states must be defined (not null)</li>
- *     <li>Event Type must be defined (not null)</li>
- *     <li>Event Handler is not mandatory</li>
+ * <li>Source and target states must be declared in FSM states set.</li>
+ * <li>Source and target states must be defined (not null)</li>
+ * <li>Event Type must be defined (not null)</li>
+ * <li>Event Handler is not mandatory</li>
  * </ul>
  *
  * @author Mahmoud Ben Hassine (mahmoud.benhassine@icloud.com)
  */
 public class TransitionBuilder {
 
-    private final TransitionImpl transition;
+	@SuppressWarnings("rawtypes")
+	private final TransitionImpl transition;
 
-    /**
-     * Create a new {@link TransitionBuilder}.
-     */
-    public TransitionBuilder() {
-        transition = new TransitionImpl();
-    }
+	/**
+	 * Create a new {@link TransitionBuilder}.
+	 */
+	@SuppressWarnings("rawtypes")
+	public TransitionBuilder() {
+		transition = new TransitionImpl();
+	}
 
-    /**
-     * Set the name of the transition.
-     * @param name of the transition
-     * @return FSM transition builder
-     */
-    public TransitionBuilder name(final String name) {
-        transition.setName(name);
-        return this;
-    }
+	/**
+	 * Build a transition instance.
+	 * 
+	 * @return a transition instance.
+	 */
+	public Transition build() {
+		return transition;
+	}
 
-    /**
-     * Set the source state of the transition.
-     * @param sourceState of the transition
-     * @return FSM transition builder
-     */
-    public TransitionBuilder sourceState(final State sourceState) {
-        transition.setSourceState(sourceState);
-        return this;
-    }
+	/**
+	 * Set the event handler of the transition.
+	 * 
+	 * @param eventHandler of the transition
+	 * @return FSM transition builder
+	 */
+	@SuppressWarnings("unchecked")
+	public <E extends Event> TransitionBuilder eventHandler(final EventHandler<E> eventHandler) {
+		transition.setEventHandler(eventHandler);
+		return this;
+	}
 
-    /**
-     * Set the target state of the transition.
-     * @param targetState of the transition
-     * @return FSM transition builder
-     */
-    public TransitionBuilder targetState(final State targetState) {
-        transition.setTargetState(targetState);
-        return this;
-    }
+	/**
+	 * Set event type upon which the transition should be triggered.
+	 * 
+	 * @param eventType of the transition
+	 * @return FSM transition builder
+	 */
+	@SuppressWarnings("unchecked")
+	public TransitionBuilder eventType(final Class<? extends Event> eventType) {
+		transition.setEventType(eventType);
+		return this;
+	}
 
-    /**
-     * Set event type upon which the transition should be triggered.
-     * @param eventType of the transition
-     * @return FSM transition builder
-     */
-    public TransitionBuilder eventType(final Class<? extends Event> eventType) {
-        transition.setEventType(eventType);
-        return this;
-    }
+	/**
+	 * Set the name of the transition.
+	 * 
+	 * @param name of the transition
+	 * @return FSM transition builder
+	 */
+	public TransitionBuilder name(final String name) {
+		transition.setName(name);
+		return this;
+	}
 
-    /**
-     * Set the event handler of the transition.
-     * @param eventHandler of the transition
-     * @return FSM transition builder
-     */
-    public <E extends Event> TransitionBuilder eventHandler(final EventHandler<E> eventHandler) {
-        transition.setEventHandler(eventHandler);
-        return this;
-    }
+	/**
+	 * Set the source state of the transition.
+	 * 
+	 * @param sourceState of the transition
+	 * @return FSM transition builder
+	 */
+	public TransitionBuilder sourceState(final State sourceState) {
+		transition.setSourceState(sourceState);
+		return this;
+	}
 
-    /**
-     * Build a transition instance.
-     * @return a transition instance.
-     */
-    public Transition build() {
-        return transition;
-    }
+	/**
+	 * Set the target state of the transition.
+	 * 
+	 * @param targetState of the transition
+	 * @return FSM transition builder
+	 */
+	public TransitionBuilder targetState(final State targetState) {
+		transition.setTargetState(targetState);
+		return this;
+	}
 
 }

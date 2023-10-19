@@ -1,5 +1,7 @@
 package org.rossonet.brain.api.message;
 
-public interface BrainMessage {
+import org.rossonet.brain.api.UniversallyUniqueObject;
+
+public interface BrainMessage extends UniversallyUniqueObject {
 
 }

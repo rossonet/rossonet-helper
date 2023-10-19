@@ -64,12 +64,14 @@ public abstract class AbstractRuleDefinitionReader implements RuleDefinitionRead
 		}
 		ruleDefinition.setCondition(condition);
 
+		@SuppressWarnings("unchecked")
 		final List<String> actions = (List<String>) map.get("actions");
 		if ((actions == null || actions.isEmpty()) && compositeRuleType == null) {
 			throw new IllegalArgumentException("The rule action(s) must be specified");
 		}
 		ruleDefinition.setActions(actions);
 
+		@SuppressWarnings("unchecked")
 		final List<Object> composingRules = (List<Object>) map.get("composingRules");
 		if ((composingRules != null && !composingRules.isEmpty()) && compositeRuleType == null) {
 			throw new IllegalArgumentException("Non-composite rules cannot have composing rules");
@@ -78,6 +80,7 @@ public abstract class AbstractRuleDefinitionReader implements RuleDefinitionRead
 		} else if (composingRules != null) {
 			final List<RuleDefinition> composingRuleDefinitions = new ArrayList<>();
 			for (final Object rule : composingRules) {
+				@SuppressWarnings("unchecked")
 				final Map<String, Object> composingRuleMap = (Map<String, Object>) rule;
 				composingRuleDefinitions.add(createRuleDefinition(composingRuleMap));
 			}

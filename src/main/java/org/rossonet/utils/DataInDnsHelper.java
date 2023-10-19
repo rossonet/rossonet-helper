@@ -15,11 +15,13 @@ import com.google.common.base.Splitter;
 
 public class DataInDnsHelper {
 
-	public static String getStringFromDns(final String hostNamePrefix, final String domain, final int retry)
+	private static final String CHUNK_NUMBER_SUFFIX = "-idx";
+
+	public static String getStringFromDnsHostRecord(final String hostNamePrefix, final String domain, final int retry)
 			throws TextParseException, UnknownHostException {
 		final StringBuilder resultString = new StringBuilder();
 		final Set<String> errors = new HashSet<>();
-		final Lookup l = new Lookup(hostNamePrefix + "-max" + "." + domain, Type.TXT, DClass.IN);
+		final Lookup l = new Lookup(hostNamePrefix + CHUNK_NUMBER_SUFFIX + "." + domain, Type.TXT, DClass.IN);
 		l.setResolver(new SimpleResolver());
 		l.run();
 		if (l.getResult() == Lookup.SUCCESSFUL) {
@@ -43,9 +45,10 @@ public class DataInDnsHelper {
 				errors.add("error, size of data is " + l.getAnswers()[0].rdataToString());
 			}
 		} else {
-			errors.add("no " + hostNamePrefix + "-max" + domain + " record found -> " + l.getErrorString());
+			errors.add("no " + hostNamePrefix + CHUNK_NUMBER_SUFFIX + "." + domain + " record found -> "
+					+ l.getErrorString());
 			if (retry > 0) {
-				return getStringFromDns(hostNamePrefix, domain, retry - 1);
+				return getStringFromDnsHostRecord(hostNamePrefix, domain, retry - 1);
 			} else {
 				return null;
 			}
@@ -57,7 +60,7 @@ public class DataInDnsHelper {
 		}
 	}
 
-	public static String toBase64ForDns(final String hostNamePrefix, String data) throws IOException {
+	public static String prepareStringAsDnsHostRecord(final String hostNamePrefix, String data) throws IOException {
 		final Iterable<String> chunks = Splitter.fixedLength(254).split(data);
 		final StringBuilder result = new StringBuilder();
 		int counter = 0;
@@ -65,7 +68,8 @@ public class DataInDnsHelper {
 			result.append(hostNamePrefix + "-" + String.valueOf(counter) + "\tIN\tTXT\t" + '"' + s + '"' + "\n");
 			counter++;
 		}
-		result.append(hostNamePrefix + "-max" + "\tIN\tTXT\t" + '"' + String.valueOf(counter) + '"' + "\n");
+		result.append(
+				hostNamePrefix + CHUNK_NUMBER_SUFFIX + "\tIN\tTXT\t" + '"' + String.valueOf(counter) + '"' + "\n");
 		return result.toString();
 	}
 

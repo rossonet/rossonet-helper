@@ -24,41 +24,48 @@
 package org.rossonet.ext.states.api;
 
 /**
- * Abstraction for a FSM transition.
- * <strong>Transitions are unique according to source state and triggering event type.</strong>
+ * Abstraction for a FSM transition. <strong>Transitions are unique according to
+ * source state and triggering event type.</strong>
  *
  * @author Mahmoud Ben Hassine (mahmoud.benhassine@icloud.com)
  */
-public interface Transition  {
+public interface Transition {
 
-    /**
-     * Return transition name.
-     * @return transition name
-     */
-    String getName();
+	/**
+	 * Return event handler to execute when an event is fired.
+	 * 
+	 * @return transition event handler
+	 */
 
-    /**
-     * Return transition source state.
-     * @return transition source state
-     */
-    State getSourceState();
+	@SuppressWarnings("rawtypes")
+	EventHandler getEventHandler();
 
-    /**
-     * Return transition target state.
-     * @return transition target state
-     */
-    State getTargetState();
+	/**
+	 * Return fired event type upon which the transition should be made.
+	 * 
+	 * @return Event type class
+	 */
+	Class<? extends Event> getEventType();
 
-    /**
-     * Return fired event type upon which the transition should be made.
-     * @return Event type class
-     */
-    Class<? extends Event> getEventType();
+	/**
+	 * Return transition name.
+	 * 
+	 * @return transition name
+	 */
+	String getName();
 
-    /**
-     * Return event handler to execute when an event is fired.
-     * @return transition event handler
-     */
-    EventHandler getEventHandler();
+	/**
+	 * Return transition source state.
+	 * 
+	 * @return transition source state
+	 */
+	State getSourceState();
+
+	/**
+	 * Return transition target state.
+	 * 
+	 * @return transition target state
+	 */
+	State getTargetState();
 
 }

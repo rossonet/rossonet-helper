@@ -1,17 +1,3 @@
-/**
-    This program is free software: you can redistribute it and/or modify
-    it under the terms of the GNU Affero General Public License as published
-    by the Free Software Foundation, either version 3 of the License, or
-    (at your option) any later version.
-
-    This program is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU Affero General Public License for more details.
-
-    You should have received a copy of the GNU Affero General Public License
-    along with this program.  If not, see <http://www.gnu.org/licenses/>.
-    */
 package org.rossonet.utils;
 
 import java.io.IOException;
@@ -28,39 +14,32 @@ import java.util.Enumeration;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public final class NetworkHelper {
 
-	private static final Logger logger = Logger.getLogger(NetworkHelper.class.getName());
-
 	private final static Long[] SUBNET_MASK = new Long[] { 4294934528L, 4294950912L, 4294959104L, 4294963200L,
 			4294965248L, 4294966272L, 4294966784L, 4294967040L, 4294967168L, 4294967232L, 4294967264L, 4294967280L,
 			4294967288L, 4294967292L, 4294967294L, 4294967295L };
 
-	public static boolean checkLocalPortAvailable(final int port) {
+	public static boolean checkLocalPortAvailable(final int port) throws IOException {
 		boolean portTaken = false;
 		ServerSocket socket = null;
 		try {
 			socket = new ServerSocket(port);
 			socket.setReuseAddress(true);
 		} catch (final IOException e) {
-			logger.severe(e.getMessage());
 			portTaken = true;
 		} finally {
-			if (socket != null)
-				try {
-					socket.close();
-				} catch (final IOException e) {
-					logger.severe(e.getMessage());
-				}
+			if (socket != null) {
+				socket.close();
+			}
 		}
 		return !portTaken;
 	}
 
-	public static int findAvailablePort(final int defaultPort) {
+	public static int findAvailablePort(final int faultPort) {
 		try {
 			final ServerSocket socket = new ServerSocket(0);
 			socket.setReuseAddress(true);
@@ -68,8 +47,7 @@ public final class NetworkHelper {
 			socket.close();
 			return port;
 		} catch (final IOException ex) {
-			logger.severe(ex.getMessage());
-			return defaultPort;
+			return faultPort;
 		}
 	}
 
@@ -97,70 +75,52 @@ public final class NetworkHelper {
 		try {
 			return InetAddress.getLocalHost().getHostName();
 		} catch (final UnknownHostException e) {
-			logger.severe(e.getMessage());
 			return "localhost";
 		}
 	}
 
-	/*
-	 * Given an address resolve it to as many unique addresses or hostnames as can
-	 * be found.
-	 *
-	 * @param address the address to resolve.
-	 *
-	 * @return the addresses and hostnames that were resolved from {@code address}.
-	 */
-	public static Set<String> getHostnames(final String address) {
+	public static Set<String> getHostnames(final String address) throws UnknownHostException, SocketException {
 		final Set<String> hostnames = new HashSet<>();
-		try {
-			final InetAddress inetAddress = InetAddress.getByName(address);
 
-			if (inetAddress.isAnyLocalAddress()) {
-				try {
-					final Enumeration<NetworkInterface> nis = NetworkInterface.getNetworkInterfaces();
+		final InetAddress inetAddress = InetAddress.getByName(address);
 
-					for (final NetworkInterface ni : Collections.list(nis)) {
-						Collections.list(ni.getInetAddresses()).forEach(ia -> {
-							if (ia instanceof Inet4Address) {
-								hostnames.add(ia.getHostName());
-								hostnames.add(ia.getHostAddress());
-								hostnames.add(ia.getCanonicalHostName());
-							}
-						});
+		if (inetAddress.isAnyLocalAddress()) {
+
+			final Enumeration<NetworkInterface> nis = NetworkInterface.getNetworkInterfaces();
+
+			for (final NetworkInterface ni : Collections.list(nis)) {
+				Collections.list(ni.getInetAddresses()).forEach(ia -> {
+					if (ia instanceof Inet4Address) {
+						hostnames.add(ia.getHostName());
+						hostnames.add(ia.getHostAddress());
+						hostnames.add(ia.getCanonicalHostName());
 					}
-				} catch (final SocketException e) {
-					logger.severe(e.getMessage());
-				}
-			} else {
-				hostnames.add(inetAddress.getHostName());
-				hostnames.add(inetAddress.getHostAddress());
-				hostnames.add(inetAddress.getCanonicalHostName());
+				});
 			}
-		} catch (final UnknownHostException e) {
-			logger.severe(e.getMessage());
+		} else {
+			hostnames.add(inetAddress.getHostName());
+			hostnames.add(inetAddress.getHostAddress());
+			hostnames.add(inetAddress.getCanonicalHostName());
 		}
 		return hostnames;
 	}
 
 	public static String getMacAddressAsString(final String hostname) throws Exception {
 		InetAddress ip = null;
-		try {
-			ip = InetAddress.getByName(hostname);
-			final NetworkInterface network = NetworkInterface.getByInetAddress(ip);
-			if (network != null) {
-				final byte[] mac = network.getHardwareAddress();
-				final StringBuilder sb = new StringBuilder();
-				for (int i = 0; i < mac.length; i++) {
-					sb.append(String.format("%02X%s", mac[i], ""));
-				}
-				return sb.toString().toLowerCase();
-			} else {
-				return null;
+
+		ip = InetAddress.getByName(hostname);
+		final NetworkInterface network = NetworkInterface.getByInetAddress(ip);
+		if (network != null) {
+			final byte[] mac = network.getHardwareAddress();
+			final StringBuilder sb = new StringBuilder();
+			for (int i = 0; i < mac.length; i++) {
+				sb.append(String.format("%02X%s", mac[i], ""));
 			}
-		} catch (final Exception e) {
-			logger.info("searching mac of " + ip + "\n" + LogHelper.stackTraceToString(e));
-			throw e;
+			return sb.toString().toLowerCase();
+		} else {
+			return null;
 		}
+
 	}
 
 	private static long ipAddressToLong(final String ipAddress) {

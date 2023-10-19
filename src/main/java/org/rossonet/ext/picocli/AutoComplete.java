@@ -37,14 +37,14 @@ import org.rossonet.ext.picocli.CommandLine.Command;
 import org.rossonet.ext.picocli.CommandLine.HelpCommand;
 import org.rossonet.ext.picocli.CommandLine.IExecutionExceptionHandler;
 import org.rossonet.ext.picocli.CommandLine.IFactory;
-import org.rossonet.ext.picocli.CommandLine.Option;
-import org.rossonet.ext.picocli.CommandLine.Parameters;
-import org.rossonet.ext.picocli.CommandLine.ParseResult;
-import org.rossonet.ext.picocli.CommandLine.Spec;
 import org.rossonet.ext.picocli.CommandLine.Model.ArgSpec;
 import org.rossonet.ext.picocli.CommandLine.Model.CommandSpec;
 import org.rossonet.ext.picocli.CommandLine.Model.OptionSpec;
 import org.rossonet.ext.picocli.CommandLine.Model.PositionalParamSpec;
+import org.rossonet.ext.picocli.CommandLine.Option;
+import org.rossonet.ext.picocli.CommandLine.Parameters;
+import org.rossonet.ext.picocli.CommandLine.ParseResult;
+import org.rossonet.ext.picocli.CommandLine.Spec;
 
 /**
  * Stand-alone tool that generates bash auto-complete scripts for picocli-based
@@ -156,6 +156,7 @@ public class AutoComplete {
 	 * Drops all characters that are not valid for bash function and identifier
 	 * names.
 	 */
+	@SuppressWarnings("unused")
 	private static class Bashify implements Function<CharSequence, String> {
 		@Override
 		public String apply(CharSequence value) {
@@ -249,12 +250,14 @@ public class AutoComplete {
 	public static final int EXIT_CODE_INVALID_INPUT = 1;
 
 	/**
-	 * Exit code of this application when the specified command script exists ({@value}).
+	 * Exit code of this application when the specified command script exists
+	 * ({@value}).
 	 */
 	public static final int EXIT_CODE_COMMAND_SCRIPT_EXISTS = 2;
 
 	/**
-	 * Exit code of this application when the specified completion script exists ({@value}).
+	 * Exit code of this application when the specified completion script exists
+	 * ({@value}).
 	 */
 	public static final int EXIT_CODE_COMPLETION_SCRIPT_EXISTS = 3;
 

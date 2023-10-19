@@ -1,5 +1,7 @@
 package org.rossonet.brain.api.neurone.dendrite;
 
-public interface Dendrite {
+import org.rossonet.brain.api.UniversallyUniqueObject;
+
+public interface Dendrite extends UniversallyUniqueObject {
 
 }

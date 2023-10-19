@@ -31,90 +31,100 @@ import org.rossonet.ext.states.util.Utils;
 
 final class TransitionImpl<E extends Event> implements Transition {
 
-    private String name;
-    private State sourceState;
-    private State targetState;
-    private Class<E> eventType;
-    private EventHandler<E> eventHandler;
+	private String name;
+	private State sourceState;
+	private State targetState;
+	private Class<E> eventType;
+	private EventHandler<E> eventHandler;
 
-    public TransitionImpl() {
-        name = Utils.DEFAULT_TRANSITION_NAME;
-    }
+	public TransitionImpl() {
+		name = Utils.DEFAULT_TRANSITION_NAME;
+	}
 
-    public State getSourceState() {
-        return sourceState;
-    }
+	@Override
+	public boolean equals(Object o) {
+		if (this == o) {
+			return true;
+		}
+		if (o == null || getClass() != o.getClass()) {
+			return false;
+		}
 
-    public void setSourceState(State sourceState) {
-        this.sourceState = sourceState;
-    }
+		@SuppressWarnings("rawtypes")
+		final TransitionImpl that = (TransitionImpl) o;
 
-    public State getTargetState() {
-        return targetState;
-    }
+		return eventType.equals(that.eventType) && sourceState.equals(that.sourceState);
 
-    public void setTargetState(State targetState) {
-        this.targetState = targetState;
-    }
+	}
 
-    public String getName() {
-        return name;
-    }
+	@Override
+	public EventHandler<? extends Event> getEventHandler() {
+		return eventHandler;
+	}
 
-    public void setName(String name) {
-        this.name = name;
-    }
+	@Override
+	public Class<E> getEventType() {
+		return eventType;
+	}
 
-    public Class<E> getEventType() {
-        return eventType;
-    }
+	@Override
+	public String getName() {
+		return name;
+	}
 
-    public void setEventType(Class<E> eventType) {
-        this.eventType = eventType;
-    }
+	@Override
+	public State getSourceState() {
+		return sourceState;
+	}
 
-    public EventHandler<? extends Event> getEventHandler() {
-        return eventHandler;
-    }
+	@Override
+	public State getTargetState() {
+		return targetState;
+	}
 
-    public void setEventHandler(EventHandler<E> eventHandler) {
-        this.eventHandler = eventHandler;
-    }
+	@Override
+	public int hashCode() {
+		int result = sourceState.hashCode();
+		result = 31 * result + eventType.hashCode();
+		return result;
+	}
 
-    /*
-     * Transitions are unique according to source state and triggering event type
-     */
+	public void setEventHandler(EventHandler<E> eventHandler) {
+		this.eventHandler = eventHandler;
+	}
 
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+	public void setEventType(Class<E> eventType) {
+		this.eventType = eventType;
+	}
 
-        TransitionImpl that = (TransitionImpl) o;
+	public void setName(String name) {
+		this.name = name;
+	}
 
-        return eventType.equals(that.eventType) && sourceState.equals(that.sourceState);
+	/*
+	 * Transitions are unique according to source state and triggering event type
+	 */
 
-    }
+	public void setSourceState(State sourceState) {
+		this.sourceState = sourceState;
+	}
 
-    @Override
-    public int hashCode() {
-        int result = sourceState.hashCode();
-        result = 31 * result + eventType.hashCode();
-        return result;
-    }
+	public void setTargetState(State targetState) {
+		this.targetState = targetState;
+	}
 
-    @Override
-    public String toString() {
-        final StringBuilder sb = new StringBuilder();
-        sb.append("Transition");
-        sb.append("{name='").append(name).append('\'');
-        sb.append(", sourceState=").append(sourceState.getName());
-        sb.append(", targetState=").append(targetState.getName());
-        sb.append(", eventType=").append(eventType);
-        if (eventHandler != null) {
-            sb.append(", eventHandler=").append(eventHandler.getClass().getName());
-        }
-        sb.append('}');
-        return sb.toString();
-    }
+	@Override
+	public String toString() {
+		final StringBuilder sb = new StringBuilder();
+		sb.append("Transition");
+		sb.append("{name='").append(name).append('\'');
+		sb.append(", sourceState=").append(sourceState.getName());
+		sb.append(", targetState=").append(targetState.getName());
+		sb.append(", eventType=").append(eventType);
+		if (eventHandler != null) {
+			sb.append(", eventHandler=").append(eventHandler.getClass().getName());
+		}
+		sb.append('}');
+		return sb.toString();
+	}
 }

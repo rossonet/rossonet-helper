@@ -24,7 +24,7 @@ public class PriorityExecutorTests {
 	}
 
 	@Test
-	public void testExecutor() {
+	public void testExecutor() throws InterruptedException {
 		final PriorityExecutorService s = PriorityExecutors.newPriorityFixedThreadPool(2);
 		for (int i = 0; i < 10; i++) {
 			s.submit(new TestThread(3), 3);
@@ -36,5 +36,6 @@ public class PriorityExecutorTests {
 			s.submit(new TestThread(8), 8);
 		}
 		s.changePriorities(5, 10);
+		Thread.sleep(60000);
 	}
 }

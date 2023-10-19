@@ -1,5 +1,11 @@
 package org.rossonet.brain.api.astrocyte;
 
-public interface Astrocyte {
+import org.rossonet.brain.api.UniversallyUniqueObject;
+
+public interface Astrocyte extends UniversallyUniqueObject {
+
+	boolean isBootstrap();
+
+	void setBootstrap(boolean isBootstrapAstrocyte);
 
 }

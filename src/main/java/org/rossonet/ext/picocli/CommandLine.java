@@ -110,8 +110,6 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.rossonet.ext.picocli.CommandLine.Help;
-import org.rossonet.ext.picocli.CommandLine.Help.Ansi;
 import org.rossonet.ext.picocli.CommandLine.Help.Ansi.IStyle;
 import org.rossonet.ext.picocli.CommandLine.Help.Ansi.Style;
 import org.rossonet.ext.picocli.CommandLine.Help.Ansi.Text;
@@ -242,6 +240,7 @@ import org.rossonet.ext.picocli.CommandLine.ParseResult.GroupMatchContainer;
  * Parsing Command Line Arguments">
  * </p>
  */
+@SuppressWarnings("unused")
 public class CommandLine {
 
 	static class AbbreviationMatcher {
@@ -1570,7 +1569,8 @@ public class CommandLine {
 
 		/**
 		 * Exit code for successful termination after printing usage help on user
-		 * request. {@value org.rossonet.ext.picocli.CommandLine.ExitCode#OK} by default.
+		 * request. {@value org.rossonet.ext.picocli.CommandLine.ExitCode#OK} by
+		 * default.
 		 * 
 		 * @see #execute(String...)
 		 * @since 4.0
@@ -1579,7 +1579,8 @@ public class CommandLine {
 
 		/**
 		 * Exit code for successful termination after printing version help on user
-		 * request. {@value org.rossonet.ext.picocli.CommandLine.ExitCode#OK} by default.
+		 * request. {@value org.rossonet.ext.picocli.CommandLine.ExitCode#OK} by
+		 * default.
 		 * 
 		 * @see #execute(String...)
 		 * @since 4.0
@@ -8449,7 +8450,7 @@ public class CommandLine {
 			parseResultBuilder.addOriginalStringValue(argSpec, arg);
 		}
 
-		@SuppressWarnings("unchecked")
+		@SuppressWarnings({ "unchecked", "rawtypes" })
 		private Collection<Object> createCollection(Class<?> collectionClass, Class<?>[] elementType) throws Exception {
 			if (EnumSet.class.isAssignableFrom(collectionClass) && Enum.class.isAssignableFrom(elementType[0])) {
 				final Object enumSet = EnumSet.noneOf((Class<Enum>) elementType[0]);
@@ -8560,7 +8561,7 @@ public class CommandLine {
 		private ITypeConverter<Object> getEnumTypeConverter(final Class<?> type) {
 			return new ITypeConverter<Object>() {
 				@Override
-				@SuppressWarnings("unchecked")
+				@SuppressWarnings({ "unchecked", "rawtypes" })
 				public Object convert(String value) throws Exception {
 					try {
 						return Enum.valueOf((Class<Enum>) type, value);
@@ -11934,6 +11935,7 @@ public class CommandLine {
 				 * @see Parameters#mapFallbackValue()
 				 * @since 4.6
 				 */
+				@SuppressWarnings("rawtypes")
 				public Builder mapFallbackValue(String fallbackValue) {
 					this.mapFallbackValue = fallbackValue;
 					return self();
@@ -14932,9 +14934,10 @@ public class CommandLine {
 			/**
 			 * Returns exit code signifying that an exception occurred when invoking the
 			 * Runnable, Callable or Method user object of a command.
-			 * {@value org.rossonet.ext.picocli.CommandLine.ExitCode#SOFTWARE} by default, may be set
-			 * programmatically or via the {@link Command#exitCodeOnExecutionException()
-			 * exitCodeOnExecutionException} annotation.
+			 * {@value org.rossonet.ext.picocli.CommandLine.ExitCode#SOFTWARE} by default,
+			 * may be set programmatically or via the
+			 * {@link Command#exitCodeOnExecutionException() exitCodeOnExecutionException}
+			 * annotation.
 			 * 
 			 * @see #execute(String...)
 			 * @since 4.0
@@ -14958,8 +14961,8 @@ public class CommandLine {
 
 			/**
 			 * Returns exit code for command line usage error.
-			 * {@value org.rossonet.ext.picocli.CommandLine.ExitCode#USAGE} by default, may be set
-			 * programmatically or via the {@link Command#exitCodeOnInvalidInput()
+			 * {@value org.rossonet.ext.picocli.CommandLine.ExitCode#USAGE} by default, may
+			 * be set programmatically or via the {@link Command#exitCodeOnInvalidInput()
 			 * exitCodeOnInvalidInput} annotation.
 			 * 
 			 * @see #execute(String...)
@@ -14983,8 +14986,8 @@ public class CommandLine {
 
 			/**
 			 * Returns exit code for successful termination.
-			 * {@value org.rossonet.ext.picocli.CommandLine.ExitCode#OK} by default, may be set
-			 * programmatically or via the {@link Command#exitCodeOnSuccess()
+			 * {@value org.rossonet.ext.picocli.CommandLine.ExitCode#OK} by default, may be
+			 * set programmatically or via the {@link Command#exitCodeOnSuccess()
 			 * exitCodeOnSuccess} annotation.
 			 * 
 			 * @see #execute(String...)
@@ -15008,9 +15011,9 @@ public class CommandLine {
 
 			/**
 			 * Returns exit code for successful termination after printing usage help on
-			 * user request. {@value org.rossonet.ext.picocli.CommandLine.ExitCode#OK} by default, may be set
-			 * programmatically or via the {@link Command#exitCodeOnVersionHelp()
-			 * exitCodeOnVersionHelp} annotation.
+			 * user request. {@value org.rossonet.ext.picocli.CommandLine.ExitCode#OK} by
+			 * default, may be set programmatically or via the
+			 * {@link Command#exitCodeOnVersionHelp() exitCodeOnVersionHelp} annotation.
 			 * 
 			 * @see #execute(String...)
 			 * @since 4.0
@@ -15021,7 +15024,8 @@ public class CommandLine {
 
 			/**
 			 * Sets exit code for successful termination after printing usage help on user
-			 * request. {@value org.rossonet.ext.picocli.CommandLine.ExitCode#OK} by default.
+			 * request. {@value org.rossonet.ext.picocli.CommandLine.ExitCode#OK} by
+			 * default.
 			 * 
 			 * @see #execute(String...)
 			 * @since 4.0
@@ -15033,9 +15037,9 @@ public class CommandLine {
 
 			/**
 			 * Returns exit code for successful termination after printing version help on
-			 * user request. {@value org.rossonet.ext.picocli.CommandLine.ExitCode#OK} by default, may be set
-			 * programmatically or via the {@link Command#exitCodeOnUsageHelp()
-			 * exitCodeOnUsageHelp} annotation.
+			 * user request. {@value org.rossonet.ext.picocli.CommandLine.ExitCode#OK} by
+			 * default, may be set programmatically or via the
+			 * {@link Command#exitCodeOnUsageHelp() exitCodeOnUsageHelp} annotation.
 			 * 
 			 * @see #execute(String...)
 			 * @since 4.0
@@ -15046,7 +15050,8 @@ public class CommandLine {
 
 			/**
 			 * Sets exit code for successful termination after printing version help on user
-			 * request. {@value org.rossonet.ext.picocli.CommandLine.ExitCode#OK} by default.
+			 * request. {@value org.rossonet.ext.picocli.CommandLine.ExitCode#OK} by
+			 * default.
 			 * 
 			 * @see #execute(String...)
 			 * @since 4.0
@@ -18767,6 +18772,7 @@ public class CommandLine {
 				return create(type, new Class<?>[0], (Type) null, Range.valueOf("1"), String.class, false);
 			}
 
+			@SuppressWarnings("rawtypes")
 			static Class<?>[] extractTypeParameters(ParameterizedType genericType) {
 				final Type[] paramTypes = genericType.getActualTypeArguments(); // e.g. ? extends Number
 				final List<Class<?>> result = new ArrayList<Class<?>>();
@@ -24761,8 +24767,9 @@ public class CommandLine {
 	 * {@linkplain #createDefault() supported by default} by this class.
 	 * </p>
 	 * <p>
-	 * See the {@link org.rossonet.ext.picocli.CommandLine.RegexTransformer.Builder} for an example
-	 * of customizing this to create negative forms for short options.
+	 * See the {@link org.rossonet.ext.picocli.CommandLine.RegexTransformer.Builder}
+	 * for an example of customizing this to create negative forms for short
+	 * options.
 	 * </p>
 	 * 
 	 * @since 4.0

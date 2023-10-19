@@ -6,11 +6,16 @@ import java.nio.file.Paths;
 
 public class FileSystemHelper {
 
+	@Deprecated
 	public static void deleteDirectory(final File file) {
+		deleteDirectoryRecursive(file);
+	}
+
+	public static void deleteDirectoryRecursive(final File file) {
 		if (Files.exists(Paths.get(file.getAbsolutePath()))) {
 			for (final File subfile : file.listFiles()) {
 				if (subfile.isDirectory()) {
-					deleteDirectory(subfile);
+					deleteDirectoryRecursive(subfile);
 				}
 				subfile.delete();
 			}
