@@ -8,12 +8,6 @@ public class SimpleAstrocyteBuilder implements AstrocyteBuilder {
 	private final SimpleAstrocyte simpleAstrocyte = new SimpleAstrocyte();
 
 	@Override
-	public AstrocyteBuilder bootstrap(boolean isBootstrapAstrocyte) {
-		simpleAstrocyte.setBootstrap(isBootstrapAstrocyte);
-		return this;
-	}
-
-	@Override
 	public Astrocyte build() {
 		return simpleAstrocyte;
 	}

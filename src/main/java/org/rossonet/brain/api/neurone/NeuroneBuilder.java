@@ -1,9 +1,9 @@
 package org.rossonet.brain.api.neurone;
 
-public interface NeuroneBuilder {
+public interface NeuroneBuilder<MANAGED_OBJECT extends Object> {
 
-	Neurone build();
+	Neurone<MANAGED_OBJECT> build();
 
-	NeuroneBuilder setSymbiosis(SymbiosisInterface managedObj);
+	NeuroneBuilder<MANAGED_OBJECT> setSymbiosis(SymbiosisInterface<MANAGED_OBJECT> managedObj);
 
 }

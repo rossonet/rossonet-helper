@@ -4,17 +4,17 @@ import org.rossonet.brain.api.neurone.Neurone;
 import org.rossonet.brain.api.neurone.NeuroneBuilder;
 import org.rossonet.brain.api.neurone.SymbiosisInterface;
 
-public class SimpleNeuroneBuilder implements NeuroneBuilder {
+public class SimpleNeuroneBuilder<MANAGED_OBJECT extends Object> implements NeuroneBuilder<MANAGED_OBJECT> {
 
-	private final SimpleNeurone simpleNeurone = new SimpleNeurone();
+	private final SimpleNeurone<MANAGED_OBJECT> simpleNeurone = new SimpleNeurone<>();
 
 	@Override
-	public Neurone build() {
+	public Neurone<MANAGED_OBJECT> build() {
 		return simpleNeurone;
 	}
 
 	@Override
-	public NeuroneBuilder setSymbiosis(SymbiosisInterface managedObj) {
+	public NeuroneBuilder<MANAGED_OBJECT> setSymbiosis(SymbiosisInterface<MANAGED_OBJECT> managedObj) {
 		simpleNeurone.setSymbiosisInterface(managedObj);
 		return this;
 	}

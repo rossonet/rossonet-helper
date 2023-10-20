@@ -8,17 +8,13 @@ import org.rossonet.brain.api.neurone.Neurone;
 
 public interface Nucleo extends UniversallyUniqueObject {
 
-	public void addAstrocyte(Astrocyte astrocyte);
-
-	public void addNeurone(Neurone neurone);
+	public void addNeurone(Neurone<?> neurone);
 
 	public Collection<Astrocyte> listAstrocytes();
 
-	public Collection<Neurone> listNeurones();
+	public Collection<Neurone<?>> listNeurones();
 
-	public void removeAstrocyte(Astrocyte astrocyte);
-
-	public void removeNeurone(Neurone neurone);
+	public void removeNeurone(Neurone<?> neurone);
 
 	public void start();
 

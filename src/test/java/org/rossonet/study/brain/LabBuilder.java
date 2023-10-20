@@ -1,5 +1,6 @@
 package org.rossonet.study.brain;
 
+import org.junit.jupiter.api.Test;
 import org.rossonet.brain.api.AbstractNucleoFactory;
 import org.rossonet.brain.api.neurone.SymbiosisInterface;
 import org.rossonet.brain.api.nucleo.Nucleo;
@@ -18,6 +19,10 @@ public class LabBuilder {
 				.addNeurone(bf.newNeuroneBuilder().setSymbiosis(managedObject2).build())
 				.addAstrocyte(bf.newAstrocyteBuilder().bootstrap(true).build()).build();
 		nucleo.start();
+	}
+
+	@Test
+	public void testThread() {
 	}
 
 }

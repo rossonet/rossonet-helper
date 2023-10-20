@@ -12,18 +12,12 @@ import org.rossonet.brain.api.nucleo.Nucleo;
 public class BaseNucleo implements Nucleo {
 
 	private final Set<Astrocyte> astrocytes = ConcurrentHashMap.newKeySet();
-	private final Set<Neurone> neurones = ConcurrentHashMap.newKeySet();
+	private final Set<Neurone<?>> neurones = ConcurrentHashMap.newKeySet();
 	private final UUID uuid = UUID.randomUUID();
 
 	@Override
-	public void addAstrocyte(Astrocyte astrocyte) {
-		astrocytes.add(astrocyte);
-
-	}
-
-	@Override
-	public void addNeurone(Neurone neurone) {
-		neurones.add(neurone);
+	public void addNeurone(Neurone<?> neurone) {
+		// TODO Auto-generated method stub
 
 	}
 
@@ -34,23 +28,19 @@ public class BaseNucleo implements Nucleo {
 
 	@Override
 	public Collection<Astrocyte> listAstrocytes() {
-		return astrocytes;
+		// TODO Auto-generated method stub
+		return null;
 	}
 
 	@Override
-	public Collection<Neurone> listNeurones() {
-		return neurones;
+	public Collection<Neurone<?>> listNeurones() {
+		// TODO Auto-generated method stub
+		return null;
 	}
 
 	@Override
-	public void removeAstrocyte(Astrocyte astrocyte) {
-		astrocytes.remove(astrocyte);
-
-	}
-
-	@Override
-	public void removeNeurone(Neurone neurone) {
-		neurones.remove(neurone);
+	public void removeNeurone(Neurone<?> neurone) {
+		// TODO Auto-generated method stub
 
 	}
 
