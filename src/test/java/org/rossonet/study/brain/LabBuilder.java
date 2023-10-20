@@ -16,8 +16,7 @@ public class LabBuilder {
 		final SymbiosisInterface managedObject1 = new ManagedObject();
 		final SymbiosisInterface managedObject2 = new ManagedObject();
 		nucleo = bf.newNucleoBuilder().addNeurone(bf.newNeuroneBuilder().setSymbiosis(managedObject1).build())
-				.addNeurone(bf.newNeuroneBuilder().setSymbiosis(managedObject2).build())
-				.addAstrocyte(bf.newAstrocyteBuilder().bootstrap(true).build()).build();
+				.addNeurone(bf.newNeuroneBuilder().setSymbiosis(managedObject2).build()).build();
 		nucleo.start();
 	}
 
