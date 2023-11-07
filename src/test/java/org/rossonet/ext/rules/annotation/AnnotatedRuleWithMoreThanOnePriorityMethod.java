@@ -23,38 +23,33 @@
  */
 package org.rossonet.ext.rules.annotation;
 
-import org.rossonet.ext.rules.annotation.Action;
-import org.rossonet.ext.rules.annotation.Condition;
-import org.rossonet.ext.rules.annotation.Priority;
-import org.rossonet.ext.rules.annotation.Rule;
-
 @Rule
 public class AnnotatedRuleWithMoreThanOnePriorityMethod {
 
-    private boolean executed;
+	private boolean executed;
 
-    @Condition
-    public boolean when() {
-        return true;
-    }
+	@Priority
+	public int getPriority() {
+		return 0;
+	}
 
-    @Action
-    public void then() {
-        executed = true;
-    }
+	@Priority
+	public int getRulePriority() {
+		return 1;
+	}
 
-    @Priority
-    public int getPriority() {
-        return 0;
-    }
+	public boolean isExecuted() {
+		return executed;
+	}
 
-    @Priority
-    public int getRulePriority() {
-        return 1;
-    }
+	@Action
+	public void then() {
+		executed = true;
+	}
 
-    public boolean isExecuted() {
-        return executed;
-    }
+	@Condition
+	public boolean when() {
+		return true;
+	}
 
 }

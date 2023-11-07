@@ -35,7 +35,6 @@ import org.rossonet.ext.rules.api.Facts;
 import org.rossonet.ext.rules.api.Rules;
 import org.rossonet.ext.rules.api.RulesEngine;
 import org.rossonet.ext.rules.api.RulesEngineListener;
-import org.rossonet.ext.rules.core.InferenceRulesEngine;
 
 public class InferenceRulesEngineTest {
 

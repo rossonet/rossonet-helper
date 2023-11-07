@@ -1,0 +1,10 @@
+[Desktop Entry]
+Version=1.0
+Type=Application
+Name=STS
+Comment=Spring Tool Suite
+Exec=/opt/sts-4.1.2.RELEASE/SpringToolSuite4
+Icon=/opt/sts-4.1.2.RELEASE/icon.xpm
+Path=/opt/sts-4.1.2.RELEASE
+Terminal=false
+StartupNotify=false

@@ -1,0 +1,9 @@
+logging:
+  log_writer_name: all
+  log_dest: logfile
+  level: 100
+network:
+  use_ipv4: true
+  use_ipv6: false
+  ssl:
+    require_ssl: false

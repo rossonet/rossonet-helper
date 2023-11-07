@@ -34,7 +34,6 @@ import org.apache.commons.jexl3.JexlEngine;
 import org.junit.jupiter.api.Test;
 import org.rossonet.ext.rules.api.Condition;
 import org.rossonet.ext.rules.api.Facts;
-import org.rossonet.ext.rules.jexl.JexlCondition;
 
 /**
  * @author Lauri Kimmel

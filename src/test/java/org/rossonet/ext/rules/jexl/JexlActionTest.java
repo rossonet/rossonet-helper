@@ -40,7 +40,6 @@ import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.rossonet.ext.rules.api.Action;
 import org.rossonet.ext.rules.api.Facts;
-import org.rossonet.ext.rules.jexl.JexlAction;
 
 /**
  * @author Lauri Kimmel

@@ -28,8 +28,6 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
-import org.rossonet.ext.rules.annotation.Rule;
-
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.TYPE)
 @Rule

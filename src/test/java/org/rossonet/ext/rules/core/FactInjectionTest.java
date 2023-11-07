@@ -33,7 +33,6 @@ import org.rossonet.ext.rules.annotation.Rule;
 import org.rossonet.ext.rules.api.Facts;
 import org.rossonet.ext.rules.api.Rules;
 import org.rossonet.ext.rules.api.RulesEngine;
-import org.rossonet.ext.rules.core.DefaultRulesEngine;
 
 public class FactInjectionTest {
 

@@ -39,9 +39,6 @@ import java.util.List;
 import org.junit.jupiter.api.Test;
 import org.rossonet.ext.rules.api.Rule;
 import org.rossonet.ext.rules.support.RuleDefinition;
-import org.rossonet.ext.rules.support.reader.JsonRuleDefinitionReader;
-import org.rossonet.ext.rules.support.reader.RuleDefinitionReader;
-import org.rossonet.ext.rules.support.reader.YamlRuleDefinitionReader;
 
 public class RuleDefinitionReaderTest {
 
@@ -69,6 +66,7 @@ public class RuleDefinitionReaderTest {
 		assertThat(ruleDefinitions).hasSize(0);
 	}
 
+	@SuppressWarnings("unused")
 	@Test // (expected = IllegalArgumentException.class)
 	public void testInvalidRuleDefinitionReading_whenNoActions() throws Exception {
 		// given
@@ -81,6 +79,7 @@ public class RuleDefinitionReaderTest {
 		// expected exception
 	}
 
+	@SuppressWarnings("unused")
 	@Test // (expected = IllegalArgumentException.class)
 	public void testInvalidRuleDefinitionReading_whenNoCondition() throws Exception {
 		// given

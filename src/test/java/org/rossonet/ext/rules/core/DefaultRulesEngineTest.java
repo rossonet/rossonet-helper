@@ -48,8 +48,6 @@ import org.rossonet.ext.rules.api.RuleListener;
 import org.rossonet.ext.rules.api.Rules;
 import org.rossonet.ext.rules.api.RulesEngineListener;
 import org.rossonet.ext.rules.api.RulesEngineParameters;
-import org.rossonet.ext.rules.core.DefaultRulesEngine;
-import org.rossonet.ext.rules.core.RuleProxy;
 
 public class DefaultRulesEngineTest extends AbstractTest {
 

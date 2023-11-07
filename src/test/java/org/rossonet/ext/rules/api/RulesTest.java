@@ -31,8 +31,6 @@ import java.util.Set;
 import org.junit.jupiter.api.Test;
 import org.rossonet.ext.rules.annotation.Action;
 import org.rossonet.ext.rules.annotation.Condition;
-import org.rossonet.ext.rules.api.Rule;
-import org.rossonet.ext.rules.api.Rules;
 import org.rossonet.ext.rules.core.BasicRule;
 
 public class RulesTest {

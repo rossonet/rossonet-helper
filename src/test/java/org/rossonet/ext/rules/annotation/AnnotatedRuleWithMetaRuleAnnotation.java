@@ -23,18 +23,15 @@
  */
 package org.rossonet.ext.rules.annotation;
 
-import org.rossonet.ext.rules.annotation.Action;
-import org.rossonet.ext.rules.annotation.Condition;
-
 @MetaRule
 public class AnnotatedRuleWithMetaRuleAnnotation {
 
-    @Condition
-    public boolean when() {
-        return true;
-    }
+	@Action
+	public void then() {
+	}
 
-    @Action
-    public void then() {
-    }
+	@Condition
+	public boolean when() {
+		return true;
+	}
 }

@@ -30,7 +30,6 @@ import org.rossonet.ext.rules.annotation.Action;
 import org.rossonet.ext.rules.annotation.Condition;
 import org.rossonet.ext.rules.annotation.Rule;
 import org.rossonet.ext.rules.api.RulesEngine;
-import org.rossonet.ext.rules.core.DefaultRulesEngine;
 
 public class AnnotationInheritanceTest extends AbstractTest {
 

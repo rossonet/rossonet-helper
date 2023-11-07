@@ -43,7 +43,6 @@ import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.rossonet.ext.rules.api.Rule;
 import org.rossonet.ext.rules.api.Rules;
-import org.rossonet.ext.rules.jexl.JexlRuleFactory;
 import org.rossonet.ext.rules.support.composite.UnitRuleGroup;
 import org.rossonet.ext.rules.support.reader.JsonRuleDefinitionReader;
 import org.rossonet.ext.rules.support.reader.YamlRuleDefinitionReader;

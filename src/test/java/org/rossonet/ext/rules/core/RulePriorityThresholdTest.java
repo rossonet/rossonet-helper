@@ -30,7 +30,6 @@ import static org.mockito.Mockito.when;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.rossonet.ext.rules.api.RulesEngineParameters;
-import org.rossonet.ext.rules.core.DefaultRulesEngine;
 
 public class RulePriorityThresholdTest extends AbstractTest {
 

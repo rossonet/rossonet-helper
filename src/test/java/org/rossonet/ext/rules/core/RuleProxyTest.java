@@ -35,8 +35,6 @@ import org.rossonet.ext.rules.annotation.Condition;
 import org.rossonet.ext.rules.annotation.Priority;
 import org.rossonet.ext.rules.api.Rule;
 import org.rossonet.ext.rules.api.Rules;
-import org.rossonet.ext.rules.core.BasicRule;
-import org.rossonet.ext.rules.core.RuleProxy;
 
 public class RuleProxyTest {
 

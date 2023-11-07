@@ -30,7 +30,6 @@ import org.junit.jupiter.api.Test;
 import org.mockito.InOrder;
 import org.mockito.Mock;
 import org.rossonet.ext.rules.api.Rule;
-import org.rossonet.ext.rules.core.BasicRule;
 
 public class CustomRuleOrderingTest extends AbstractTest {
 

@@ -16,64 +16,52 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with PriorityDeque.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.rossonet.utils.concurrent;
+package org.rossonet.ext.utils.concurrent;
 
 import java.io.Serializable;
 import java.util.AbstractQueue;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Comparator;
-import java.util.ConcurrentModificationException;
-import java.util.Deque;
 import java.util.Iterator;
 import java.util.NoSuchElementException;
 import java.util.SortedSet;
+import java.util.concurrent.BlockingDeque;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.locks.Condition;
+import java.util.concurrent.locks.ReentrantLock;
 
 /**
  * @author Akshay Jain
  *
  */
-public class PriorityDeque<E> extends AbstractQueue<E> implements Deque<E>, Serializable {
-	private final class Itr implements Iterator<E> {
-		private boolean desc = false;
+public class PriorityBlockingDeque<E> extends AbstractQueue<E> implements BlockingDeque<E>, Serializable {
+	/**
+	 * Snapshot iterator that works off copy of underlying q array.
+	 */
+	final class Itr implements Iterator<E> {
+		final Object[] array; // Array of all elements
+		int cursor; // index of next element to return;
+		int lastRet; // index of last element, or -1 if no such
+		boolean desc;
 
-		/**
-		 * Index (into queue array) of element to be returned by subsequent call to
-		 * next.
-		 */
-		private int cursor = 0;
-
-		/**
-		 * Index of element returned by most recent call to next, unless that element
-		 * came from the forgetMeNot list. Set to -1 if element is deleted by a call to
-		 * remove.
-		 */
-		private int lastRet = -1;
-
-		/**
-		 * The modCount value that the iterator believes that the backing Queue should
-		 * have. If this expectation is violated, the iterator has detected concurrent
-		 * modification.
-		 */
-		private int expectedModCount = modCount;
-
-		private Itr(boolean desc) {
+		Itr(Object[] array, boolean desc) {
+			lastRet = -1;
+			this.array = array;
 			this.desc = desc;
 			if (desc) {
-				cursor = size - 1;
+				cursor = this.array.length - 1;
 			}
 		}
 
 		@Override
 		public boolean hasNext() {
-			return (!desc && cursor < size) || (desc && cursor >= 0);
+			return (!desc && cursor < array.length) || (desc && cursor >= 0);
 		}
 
 		@Override
 		public E next() {
-			if (expectedModCount != modCount) {
-				throw new ConcurrentModificationException();
-			}
 			if (!desc) {
 				return nextAsc();
 			}
@@ -85,8 +73,8 @@ public class PriorityDeque<E> extends AbstractQueue<E> implements Deque<E>, Seri
 
 		@SuppressWarnings("unchecked")
 		private E nextAsc() {
-			if (cursor < size) {
-				return (E) PriorityDeque.this.deque[lastRet = cursor++];
+			if (cursor < array.length) {
+				return (E) array[lastRet = cursor++];
 			}
 			throw new NoSuchElementException();
 		}
@@ -94,26 +82,18 @@ public class PriorityDeque<E> extends AbstractQueue<E> implements Deque<E>, Seri
 		@SuppressWarnings("unchecked")
 		private E nextDesc() {
 			if (cursor >= 0) {
-				return (E) PriorityDeque.this.deque[lastRet = cursor--];
+				return (E) array[lastRet = cursor--];
 			}
 			throw new NoSuchElementException();
 		}
 
 		@Override
 		public void remove() {
-			if (expectedModCount != modCount) {
-				throw new ConcurrentModificationException();
-			}
-			if (lastRet != -1) {
-				final boolean decrementCounter = PriorityDeque.this.removeAtIter(lastRet, desc);
-				lastRet = -1;
-				if (decrementCounter) {
-					cursor--;
-				}
-			} else {
+			if (lastRet < 0) {
 				throw new IllegalStateException();
 			}
-			expectedModCount = modCount;
+			PriorityBlockingDeque.this.removeEQ(array[lastRet]);
+			lastRet = -1;
 		}
 	}
 
@@ -121,7 +101,7 @@ public class PriorityDeque<E> extends AbstractQueue<E> implements Deque<E>, Seri
 		MIN, MAX
 	}
 
-	private static final long serialVersionUID = -5410497035045299533L;
+	private static final long serialVersionUID = 772285010852407824L;
 
 	private static final int DEFAULT_INITIAL_CAPACITY = 11;;
 
@@ -279,13 +259,6 @@ public class PriorityDeque<E> extends AbstractQueue<E> implements Deque<E>, Seri
 
 	private static int getRightChildIndex(int parentIndex) {
 		return 2 * (parentIndex + 1);
-	}
-
-	private static int hugeCapacity(int minCapacity) {
-		if (minCapacity < 0) { // overflow
-			throw new OutOfMemoryError();
-		}
-		return (minCapacity > MAX_ARRAY_SIZE) ? Integer.MAX_VALUE : MAX_ARRAY_SIZE;
 	}
 
 	private static int indexOf(Object o, Object[] deque, int size) {
@@ -528,14 +501,29 @@ public class PriorityDeque<E> extends AbstractQueue<E> implements Deque<E>, Seri
 
 	private int size = 0;
 
-	private transient int modCount = 0;
+	/**
+	 * Lock used for all public operations
+	 */
+	private final ReentrantLock lock;
 
-	public PriorityDeque() {
+	/**
+	 * Condition for blocking when empty
+	 */
+	private final Condition notEmpty;
+
+	/**
+	 * Spinlock for allocation, acquired via CAS.
+	 */
+	private transient volatile AtomicInteger allocationSpinLock = new AtomicInteger(0);
+
+	public PriorityBlockingDeque() {
 		this(DEFAULT_INITIAL_CAPACITY, null);
 	}
 
 	@SuppressWarnings("unchecked")
-	public PriorityDeque(Collection<? extends E> c) {
+	public PriorityBlockingDeque(Collection<? extends E> c) {
+		this.lock = new ReentrantLock();
+		this.notEmpty = lock.newCondition();
 		if (c instanceof SortedSet<?>) {
 			final SortedSet<? extends E> ss = (SortedSet<? extends E>) c;
 			this.comparator = (Comparator<? super E>) ss.comparator();
@@ -544,85 +532,153 @@ public class PriorityDeque<E> extends AbstractQueue<E> implements Deque<E>, Seri
 			final PriorityDeque<? extends E> pq = (PriorityDeque<? extends E>) c;
 			this.comparator = (Comparator<? super E>) pq.comparator();
 			initFromPriorityDeque(pq);
+		} else if (c instanceof PriorityBlockingDeque<?>) {
+			final PriorityBlockingDeque<? extends E> pq = (PriorityBlockingDeque<? extends E>) c;
+			this.comparator = (Comparator<? super E>) pq.comparator();
+			initFromPriorityBlockingDeque(pq);
 		} else {
 			this.comparator = null;
 			addAll(c);
 		}
 	}
 
-	public PriorityDeque(int initialCapacity) {
+	public PriorityBlockingDeque(int initialCapacity) {
 		this(initialCapacity, null);
 	}
 
-	public PriorityDeque(int initialCapacity, Comparator<? super E> comparator) {
+	public PriorityBlockingDeque(int initialCapacity, Comparator<? super E> comparator) {
 		// Note: This restriction of at least one is not actually needed,
 		// but continues for 1.5 compatibility
 		if (initialCapacity < 1) {
 			throw new IllegalArgumentException();
 		}
-		this.deque = new Object[initialCapacity];
+		this.lock = new ReentrantLock();
+		this.notEmpty = lock.newCondition();
 		this.comparator = comparator;
+		this.deque = new Object[initialCapacity];
 	}
 
 	@SuppressWarnings("unchecked")
-	public PriorityDeque(PriorityDeque<? extends E> c) {
+	public PriorityBlockingDeque(PriorityBlockingDeque<? extends E> c) {
+		this.lock = new ReentrantLock();
+		this.notEmpty = lock.newCondition();
+		this.comparator = (Comparator<? super E>) c.comparator();
+		initFromPriorityBlockingDeque(c);
+	}
+
+	@SuppressWarnings("unchecked")
+	public PriorityBlockingDeque(PriorityDeque<? extends E> c) {
+		this.lock = new ReentrantLock();
+		this.notEmpty = lock.newCondition();
 		this.comparator = (Comparator<? super E>) c.comparator();
 		initFromPriorityDeque(c);
 	}
 
 	@SuppressWarnings("unchecked")
-	public PriorityDeque(SortedSet<? extends E> c) {
+	public PriorityBlockingDeque(SortedSet<? extends E> c) {
+		this.lock = new ReentrantLock();
+		this.notEmpty = lock.newCondition();
 		this.comparator = (Comparator<? super E>) c.comparator();
 		addAll(c);
 	}
 
 	@Override
-	public void addFirst(E e) {
-		add(e);
+	public boolean add(E element) {
+		return offer(element);
 	}
 
 	@Override
-	public void addLast(E e) {
-		add(e);
+	public void addFirst(E element) {
+		add(element);
 	}
 
 	@Override
-	public void clear() {
-		modCount++;
-		for (int i = 0; i < size; i++) {
-			deque[i] = null;
-		}
-		size = 0;
+	public void addLast(E element) {
+		add(element);
 	}
 
-	/**
-	 * Returns the comparator used to order the elements in this queue, or
-	 * {@code null} if this queue is sorted according to the {@linkplain Comparable
-	 * natural ordering} of its elements.
-	 * 
-	 * @return the comparator used to order this queue, or {@code null} if this
-	 *         queue is sorted according to the natural ordering of its elements
-	 */
 	public Comparator<? super E> comparator() {
 		return comparator;
 	}
 
-	/**
-	 * Returns {@code true} if this queue contains the specified element. More
-	 * formally, returns {@code true} if and only if this queue contains at least
-	 * one element {@code e} such that {@code o.equals(e)}.
-	 * 
-	 * @param o object to be checked for containment in this queue
-	 * @return {@code true} if this queue contains the specified element
-	 */
 	@Override
 	public boolean contains(Object o) {
-		return indexOf(o, deque, size) != -1;
+		int index;
+		final ReentrantLock lock = this.lock;
+		lock.lock();
+		try {
+			index = indexOf(o, deque, size);
+		} finally {
+			lock.unlock();
+		}
+		return index != -1;
+	}
+
+	/**
+	 * Returns an iterator over the elements in this queue. The iterator does not
+	 * return the elements in any particular order.
+	 *
+	 * <p>
+	 * The returned iterator is a "weakly consistent" iterator that will never throw
+	 * {@link java.util.ConcurrentModificationException
+	 * ConcurrentModificationException}, and guarantees to reverse-traverse elements
+	 * as they existed upon construction of the iterator, and may (but is not
+	 * guaranteed to) reflect any modifications subsequent to construction.
+	 *
+	 * @return an iterator over the elements in this queue
+	 */
+	@Override
+	public Iterator<E> descendingIterator() {
+		return new Itr(toArray(), true);
 	}
 
 	@Override
-	public Iterator<E> descendingIterator() {
-		return new Itr(true);
+	public int drainTo(Collection<? super E> c) {
+		if (c == null) {
+			throw new NullPointerException();
+		}
+		if (c == this) {
+			throw new IllegalArgumentException();
+		}
+		final ReentrantLock lock = this.lock;
+		lock.lock();
+		try {
+			int n = 0;
+			E e;
+			while ((e = removeAt(0)) != null) {
+				c.add(e);
+				++n;
+			}
+			return n;
+		} finally {
+			lock.unlock();
+		}
+	}
+
+	@Override
+	public int drainTo(Collection<? super E> c, int maxElements) {
+		if (c == null) {
+			throw new NullPointerException();
+		}
+		if (c == this) {
+			throw new IllegalArgumentException();
+		}
+		if (maxElements <= 0) {
+			return 0;
+		}
+		final ReentrantLock lock = this.lock;
+		lock.lock();
+		try {
+			int n = 0;
+			E e;
+			while (n < maxElements && (e = removeAt(0)) != null) {
+				c.add(e);
+				++n;
+			}
+			return n;
+		} finally {
+			lock.unlock();
+		}
 	}
 
 	@Override
@@ -645,15 +701,13 @@ public class PriorityDeque<E> extends AbstractQueue<E> implements Deque<E>, Seri
 		}
 	}
 
-	private void grow(int minCapacity) {
-		final int oldCapacity = deque.length;
-		// Double size if small; else grow by 50%
-		int newCapacity = oldCapacity + ((oldCapacity < 64) ? (oldCapacity + 2) : (oldCapacity >> 1));
-		// overflow-conscious code
-		if (newCapacity - MAX_ARRAY_SIZE > 0) {
-			newCapacity = hugeCapacity(minCapacity);
+	private void initFromPriorityBlockingDeque(PriorityBlockingDeque<? extends E> c) {
+		if (c.getClass() == PriorityBlockingDeque.class) {
+			deque = c.toArray();
+			size = c.size();
+		} else {
+			addAll(c);
 		}
-		deque = Arrays.copyOf(deque, newCapacity);
 	}
 
 	private void initFromPriorityDeque(PriorityDeque<? extends E> c) {
@@ -665,46 +719,78 @@ public class PriorityDeque<E> extends AbstractQueue<E> implements Deque<E>, Seri
 		}
 	}
 
-	// min-max heap implementation
-
+	/**
+	 * Returns an iterator over the elements in this queue. The iterator does not
+	 * return the elements in any particular order.
+	 *
+	 * <p>
+	 * The returned iterator is a "weakly consistent" iterator that will never throw
+	 * {@link java.util.ConcurrentModificationException
+	 * ConcurrentModificationException}, and guarantees to traverse elements as they
+	 * existed upon construction of the iterator, and may (but is not guaranteed to)
+	 * reflect any modifications subsequent to construction.
+	 *
+	 * @return an iterator over the elements in this queue
+	 */
 	@Override
 	public Iterator<E> iterator() {
-		return new Itr(false);
+		return new Itr(toArray(), false);
 	}
 
 	@Override
 	public boolean offer(E element) {
-		modCount++;
 		if (element == null) {
 			throw new NullPointerException();
 		}
-		final int index = size;
-		if (index >= deque.length) {
-			grow(index + 1);
+		final ReentrantLock lock = this.lock;
+		lock.lock();
+		int index, cap;
+		Object[] array;
+		while ((index = size) >= (cap = (array = deque).length)) {
+			tryGrow(array, cap);
 		}
-		size = index + 1;
-		if (index == 0) {
-			deque[0] = element;
-		} else {
-			deque[index] = element;
-			if (comparator == null) {
-				bubbleUp(deque, size, index);
+		try {
+			size = index + 1;
+			if (index == 0) {
+				deque[0] = element;
 			} else {
-				bubbleUpComparator(deque, size, index, comparator);
+				deque[index] = element;
+				if (comparator == null) {
+					bubbleUp(deque, size, index);
+				} else {
+					bubbleUpComparator(deque, size, index, comparator);
+				}
 			}
+			notEmpty.signal();
+		} finally {
+			lock.unlock();
 		}
-
 		return true;
 	}
 
 	@Override
-	public boolean offerFirst(E e) {
-		return offer(e);
+	public boolean offer(E element, long timeout, TimeUnit unit) throws InterruptedException {
+		return offer(element);
 	}
 
 	@Override
-	public boolean offerLast(E e) {
-		return offer(e);
+	public boolean offerFirst(E element) {
+		return offer(element);
+	}
+
+	@Override
+	public boolean offerFirst(E element, long timeout, TimeUnit unit) throws InterruptedException {
+		return offer(element);
+	}
+
+	@Override
+	public boolean offerLast(E element) {
+		return offer(element);
+	}
+
+	@Override
+	public boolean offerLast(E element, long timeout, TimeUnit unit) throws InterruptedException {
+		return offer(element);
 	}
 
 	@Override
@@ -715,21 +801,34 @@ public class PriorityDeque<E> extends AbstractQueue<E> implements Deque<E>, Seri
 	@Override
 	@SuppressWarnings("unchecked")
 	public E peekFirst() {
-		if (size > 0) {
-			return (E) deque[0];
-		} else {
-			return null;
+		final ReentrantLock lock = this.lock;
+		lock.lock();
+		E result;
+		try {
+			result = size > 0 ? (E) deque[0] : null;
+		} finally {
+			lock.unlock();
 		}
+		return result;
 	}
 
 	@Override
 	@SuppressWarnings("unchecked")
 	public E peekLast() {
+		final ReentrantLock lock = this.lock;
+		lock.lock();
 		E result = null;
-		if (size > 0) {
-			final int indexMax = indexOfLargerChild(deque, size, 0, comparator);
-			final int indexPeek = indexMax > 0 ? indexMax : 0;
-			result = (E) deque[indexPeek];
+		try {
+			if (size > 0) {
+				final int indexMax = indexOfLargerChild(deque, size, 0, comparator);
+				if (indexMax > 0) {
+					result = (E) deque[indexMax];
+				} else {
+					result = (E) deque[0];
+				}
+			}
+		} finally {
+			lock.unlock();
 		}
 		return result;
 	}
@@ -740,27 +839,98 @@ public class PriorityDeque<E> extends AbstractQueue<E> implements Deque<E>, Seri
 	}
 
 	@Override
-	public E pollFirst() {
-		modCount++;
-		return removeAt(0);
+	public E poll(long timeout, TimeUnit unit) throws InterruptedException {
+		return pollFirst(timeout, unit);
 	}
 
 	@Override
+	public E pollFirst() {
+		final ReentrantLock lock = this.lock;
+		lock.lock();
+		E result;
+		try {
+			result = removeAt(0);
+		} finally {
+			lock.unlock();
+		}
+		return result;
+	}
+
+	@Override
+	public E pollFirst(long timeout, TimeUnit unit) throws InterruptedException {
+		long nanos = unit.toNanos(timeout);
+		final ReentrantLock lock = this.lock;
+		lock.lockInterruptibly();
+		E result;
+		try {
+			while ((result = removeAt(0)) == null && nanos > 0) {
+				nanos = notEmpty.awaitNanos(nanos);
+			}
+		} finally {
+			lock.unlock();
+		}
+		return result;
+	}
+
+	// min-max heap implementation
+
+	@Override
 	public E pollLast() {
-		modCount++;
-		final int indexMax = indexOfLargerChild(deque, size, 0, comparator);
-		final int indexRemove = indexMax > 0 ? indexMax : 0;
-		return removeAt(indexRemove);
+		final ReentrantLock lock = this.lock;
+		lock.lock();
+		E result;
+		try {
+			final int indexMax = indexOfLargerChild(deque, size, 0, comparator);
+			final int indexRemove = indexMax > 0 ? indexMax : 0;
+			result = removeAt(indexRemove);
+		} finally {
+			lock.unlock();
+		}
+		return result;
+	}
+
+	@Override
+	public E pollLast(long timeout, TimeUnit unit) throws InterruptedException {
+		long nanos = unit.toNanos(timeout);
+		final ReentrantLock lock = this.lock;
+		lock.lock();
+		E result;
+		try {
+			final int indexMax = indexOfLargerChild(deque, size, 0, comparator);
+			final int indexRemove = indexMax > 0 ? indexMax : 0;
+			while ((result = removeAt(indexRemove)) == null && nanos > 0) {
+				nanos = notEmpty.awaitNanos(nanos);
+			}
+		} finally {
+			lock.unlock();
+		}
+		return result;
 	}
 
 	@Override
 	public E pop() {
-		throw new UnsupportedOperationException("Cannot use a priority deque as a stack");
+		throw new UnsupportedOperationException("Cannot use a priority blocking deque as a stack");
 	}
 
 	@Override
 	public void push(E e) {
-		throw new UnsupportedOperationException("Cannot use a priority deque as a stack");
+		throw new UnsupportedOperationException("Cannot use a priority blocking deque as a stack");
+
+	}
+
+	@Override
+	public void put(E element) throws InterruptedException {
+		offer(element);
+	}
+
+	@Override
+	public void putFirst(E element) throws InterruptedException {
+		offer(element);
+	}
+
+	@Override
+	public void putLast(E element) throws InterruptedException {
+		offer(element);
 	}
 
 	/**
@@ -785,42 +955,29 @@ public class PriorityDeque<E> extends AbstractQueue<E> implements Deque<E>, Seri
 	}
 
 	@Override
-	public E remove() {
-		final E x = poll();
-		if (x != null) {
-			return x;
-		} else {
-			throw new NoSuchElementException();
-		}
+	public int remainingCapacity() {
+		return Integer.MAX_VALUE;
 	}
 
-	/**
-	 * Removes a single instance of the specified element from this queue, if it is
-	 * present. More formally, removes an element {@code e} such that
-	 * {@code o.equals(e)}, if this queue contains one or more such elements.
-	 * Returns {@code true} if and only if this queue contained the specified
-	 * element (or equivalently, if this queue changed as a result of the call).
-	 * 
-	 * @param o element to be removed from this queue, if present
-	 * @return {@code true} if this queue changed as a result of the call
-	 */
 	@Override
 	public boolean remove(Object o) {
-		final int i = indexOf(o, deque, size);
-		if (i == -1) {
-			return false;
-		} else {
-			modCount++;
-			removeAt(i);
-			return true;
+		final ReentrantLock lock = this.lock;
+		lock.lock();
+		try {
+			final int i = indexOf(o, deque, size);
+			if (i == -1) {
+				return false;
+			} else {
+				removeAt(i);
+				return true;
+			}
+		} finally {
+			lock.unlock();
 		}
 	}
 
 	@SuppressWarnings("unchecked")
 	private E removeAt(int index) {
-		if (index < 0 || index >= size) {
-			throw new IllegalArgumentException();
-		}
 		if (size > 0) {
 			final E obj = (E) deque[index];
 			size--;
@@ -836,24 +993,24 @@ public class PriorityDeque<E> extends AbstractQueue<E> implements Deque<E>, Seri
 		return null;
 	}
 
-	@SuppressWarnings("unchecked")
-	private boolean removeAtIter(int index, boolean desc) {
-		if (!desc) {
-			if (index < size - 1) {
-				final E moved = (E) deque[size - 1];
-				modCount++;
-				removeAt(index);
-				if (moved == deque[index]) {
-					return true;
+	/**
+	 * Identity-based version for use in Itr.remove
+	 */
+	private void removeEQ(Object o) {
+		final ReentrantLock lock = this.lock;
+		lock.lock();
+		try {
+			final Object[] array = deque;
+			final int n = size;
+			for (int i = 0; i < n; i++) {
+				if (o == array[i]) {
+					removeAt(i);
+					break;
 				}
 			}
-		} else {
-			if (index >= 0) {
-				removeAt(index);
-			}
+		} finally {
+			lock.unlock();
 		}
-
-		return false;
 	}
 
 	@Override
@@ -868,19 +1025,24 @@ public class PriorityDeque<E> extends AbstractQueue<E> implements Deque<E>, Seri
 
 	@Override
 	public boolean removeFirstOccurrence(Object o) {
-		int firstIndex = -1;
-		for (int count = 0; count < size; count++) {
-			if (deque[count].equals(o)) {
-				firstIndex = count;
-				break;
+		final ReentrantLock lock = this.lock;
+		lock.lock();
+		try {
+			int firstIndex = -1;
+			for (int count = 0; count < size; count++) {
+				if (deque[count].equals(o)) {
+					firstIndex = count;
+					break;
+				}
 			}
-		}
-		if (firstIndex >= 0) {
-			modCount++;
-			removeAt(firstIndex);
-			return true;
-		} else {
-			return false;
+			if (firstIndex >= 0) {
+				removeAt(firstIndex);
+				return true;
+			} else {
+				return false;
+			}
+		} finally {
+			lock.unlock();
 		}
 	}
 
@@ -896,97 +1058,168 @@ public class PriorityDeque<E> extends AbstractQueue<E> implements Deque<E>, Seri
 
 	@Override
 	public boolean removeLastOccurrence(Object o) {
-		int lastIndex = -1;
-		for (int count = size - 1; count >= 0; count--) {
-			if (deque[count].equals(o)) {
-				lastIndex = count;
-				break;
+		final ReentrantLock lock = this.lock;
+		lock.lock();
+		try {
+			int lastIndex = -1;
+			for (int count = size - 1; count >= 0; count--) {
+				if (deque[count].equals(o)) {
+					lastIndex = count;
+					break;
+				}
 			}
-		}
-		if (lastIndex >= 0) {
-			modCount++;
-			removeAt(lastIndex);
-			return true;
-		} else {
-			return false;
+			if (lastIndex >= 0) {
+				removeAt(lastIndex);
+				return true;
+			} else {
+				return false;
+			}
+		} finally {
+			lock.unlock();
 		}
 	}
 
 	@Override
 	public int size() {
-		return size;
+		final ReentrantLock lock = this.lock;
+		lock.lock();
+		try {
+			return size;
+		} finally {
+			lock.unlock();
+		}
 	}
 
-	/**
-	 * Returns an array containing all of the elements in this queue. The elements
-	 * are in no particular order.
-	 * 
-	 * <p>
-	 * The returned array will be "safe" in that no references to it are maintained
-	 * by this queue. (In other words, this method must allocate a new array). The
-	 * caller is thus free to modify the returned array.
-	 * 
-	 * <p>
-	 * This method acts as bridge between array-based and collection-based APIs.
-	 * 
-	 * @return an array containing all of the elements in this queue
-	 */
+	@Override
+	public E take() throws InterruptedException {
+		return takeFirst();
+	}
+
+	@Override
+	public E takeFirst() throws InterruptedException {
+		final ReentrantLock lock = this.lock;
+		lock.lockInterruptibly();
+		E result;
+		try {
+			while ((result = removeAt(0)) == null) {
+				notEmpty.await();
+			}
+		} finally {
+			lock.unlock();
+		}
+		return result;
+	}
+
+	@Override
+	public E takeLast() throws InterruptedException {
+		final ReentrantLock lock = this.lock;
+		lock.lockInterruptibly();
+		E result;
+		try {
+			final int indexMax = indexOfLargerChild(deque, size, 0, comparator);
+			final int indexRemove = indexMax > 0 ? indexMax : 0;
+			while ((result = removeAt(indexRemove)) == null) {
+				notEmpty.await();
+			}
+		} finally {
+			lock.unlock();
+		}
+		return result;
+	}
+
 	@Override
 	public Object[] toArray() {
-		return Arrays.copyOf(deque, size);
+		final ReentrantLock lock = this.lock;
+		lock.lock();
+		try {
+			return Arrays.copyOf(deque, size);
+		} finally {
+			lock.unlock();
+		}
 	}
 
-	/**
-	 * Returns an array containing all of the elements in this queue; the runtime
-	 * type of the returned array is that of the specified array. The returned array
-	 * elements are in no particular order. If the queue fits in the specified
-	 * array, it is returned therein. Otherwise, a new array is allocated with the
-	 * runtime type of the specified array and the size of this queue.
-	 * 
-	 * <p>
-	 * If the queue fits in the specified array with room to spare (i.e., the array
-	 * has more elements than the queue), the element in the array immediately
-	 * following the end of the collection is set to {@code null}.
-	 * 
-	 * <p>
-	 * Like the {@link #toArray()} method, this method acts as bridge between
-	 * array-based and collection-based APIs. Further, this method allows precise
-	 * control over the runtime type of the output array, and may, under certain
-	 * circumstances, be used to save allocation costs.
-	 * 
-	 * <p>
-	 * Suppose <tt>x</tt> is a queue known to contain only strings. The following
-	 * code can be used to dump the queue into a newly allocated array of
-	 * <tt>String</tt>:
-	 * 
-	 * <pre>
-	 * String[] y = x.toArray(new String[0]);
-	 * </pre>
-	 * 
-	 * Note that <tt>toArray(new Object[0])</tt> is identical in function to
-	 * <tt>toArray()</tt>.
-	 * 
-	 * @param a the array into which the elements of the queue are to be stored, if
-	 *          it is big enough; otherwise, a new array of the same runtime type is
-	 *          allocated for this purpose.
-	 * @return an array containing all of the elements in this queue
-	 * @throws ArrayStoreException  if the runtime type of the specified array is
-	 *                              not a supertype of the runtime type of every
-	 *                              element in this queue
-	 * @throws NullPointerException if the specified array is null
-	 */
 	@Override
 	@SuppressWarnings("unchecked")
 	public <T> T[] toArray(T[] a) {
-		if (a.length < size) {
-			// Make a new array of a's runtime type, but my contents:
-			return (T[]) Arrays.copyOf(deque, size, a.getClass());
+		final ReentrantLock lock = this.lock;
+		lock.lock();
+		try {
+			if (a.length < size) {
+				// Make a new array of a's runtime type, but my contents:
+				return (T[]) Arrays.copyOf(deque, size, a.getClass());
+			}
+			System.arraycopy(deque, 0, a, 0, size);
+			if (a.length > size) {
+				a[size] = null;
+			}
+			return a;
+		} finally {
+			lock.unlock();
 		}
-		System.arraycopy(deque, 0, a, 0, size);
-		if (a.length > size) {
-			a[size] = null;
+	}
+
+	@Override
+	@SuppressWarnings("unchecked")
+	public String toString() {
+		final ReentrantLock lock = this.lock;
+		lock.lock();
+		try {
+			final int n = size;
+			if (n == 0) {
+				return "[]";
+			}
+			final StringBuilder sb = new StringBuilder();
+			sb.append('[');
+			for (int i = 0; i < n; ++i) {
+				final E e = (E) deque[i];
+				sb.append(e == this ? "(this Collection)" : e);
+				if (i != n - 1) {
+					sb.append(',').append(' ');
+				}
+			}
+			return sb.append(']').toString();
+		} finally {
+			lock.unlock();
 		}
-		return a;
+	}
+
+	/**
+	 * Tries to grow array to accommodate at least one more element (but normally
+	 * expand by about 50%), giving up (allowing retry) on contention (which we
+	 * expect to be rare). Call only while holding lock.
+	 *
+	 * @param array  the heap array
+	 * @param oldCap the length of the array
+	 */
+	private void tryGrow(Object[] array, int oldCap) {
+		lock.unlock(); // must release and then re-acquire main lock
+		Object[] newArray = null;
+		if (allocationSpinLock.get() == 0 && allocationSpinLock.compareAndSet(0, 1)) {
+			try {
+				int newCap = oldCap + ((oldCap < 64) ? (oldCap + 2) : // grow faster if small
+						(oldCap >> 1));
+				if (newCap - MAX_ARRAY_SIZE > 0) { // possible overflow
+					final int minCap = oldCap + 1;
+					if (minCap < 0 || minCap > MAX_ARRAY_SIZE) {
+						throw new OutOfMemoryError();
+					}
+					newCap = MAX_ARRAY_SIZE;
+				}
+				if (newCap > oldCap && deque == array) {
+					newArray = new Object[newCap];
+				}
+			} finally {
+				allocationSpinLock.set(0);
+			}
+		}
+		if (newArray == null) { // back off if another thread is allocating
+			Thread.yield();
+		}
+		lock.lock();
+		if (newArray != null && deque == array) {
+			deque = newArray;
+			System.arraycopy(array, 0, newArray, 0, oldCap);
+		}
 	}
 
 	/**
@@ -998,16 +1231,20 @@ public class PriorityDeque<E> extends AbstractQueue<E> implements Deque<E>, Seri
 	 * @param s the stream
 	 */
 	private void writeObject(java.io.ObjectOutputStream s) throws java.io.IOException {
-		// Write out element count, and any hidden stuff
-		s.defaultWriteObject();
+		lock.lock();
+		try {
+			// Write out element count, and any hidden stuff
+			s.defaultWriteObject();
 
-		// Write out array length, for compatibility with 1.5 version
-		s.writeInt(Math.max(2, size + 1));
+			// Write out array length, for compatibility with 1.5 version
+			s.writeInt(Math.max(2, size + 1));
 
-		// Write out all elements in the "proper order".
-		for (int i = 0; i < size; i++) {
-			s.writeObject(deque[i]);
+			// Write out all elements in the "proper order".
+			for (int i = 0; i < size; i++) {
+				s.writeObject(deque[i]);
+			}
+		} finally {
+			lock.unlock();
 		}
 	}
-
 }

@@ -23,33 +23,28 @@
  */
 package org.rossonet.ext.rules.annotation;
 
-import org.rossonet.ext.rules.annotation.Action;
-import org.rossonet.ext.rules.annotation.Condition;
-import org.rossonet.ext.rules.annotation.Priority;
-import org.rossonet.ext.rules.annotation.Rule;
-
 @Rule
 public class AnnotatedRuleWithPriorityMethodHavingNonIntegerReturnType {
 
-    private boolean executed;
+	private boolean executed;
 
-    @Condition
-    private boolean when() {
-        return true;
-    }
+	@Priority
+	public String getPriority() {
+		return "1";
+	}
 
-    @Action
-    private void then() {
-        executed = true;
-    }
+	public boolean isExecuted() {
+		return executed;
+	}
 
-    public boolean isExecuted() {
-        return executed;
-    }
+	@Action
+	private void then() {
+		executed = true;
+	}
 
-    @Priority
-    public String getPriority() {
-        return "1";
-    }
+	@Condition
+	private boolean when() {
+		return true;
+	}
 
 }

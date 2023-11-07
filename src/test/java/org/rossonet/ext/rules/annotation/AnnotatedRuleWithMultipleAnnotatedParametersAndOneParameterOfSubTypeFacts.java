@@ -23,25 +23,21 @@
  */
 package org.rossonet.ext.rules.annotation;
 
-import org.rossonet.ext.rules.annotation.Action;
-import org.rossonet.ext.rules.annotation.Condition;
-import org.rossonet.ext.rules.annotation.Fact;
-import org.rossonet.ext.rules.annotation.Rule;
 import org.rossonet.ext.rules.api.Facts;
 
 @Rule
 public class AnnotatedRuleWithMultipleAnnotatedParametersAndOneParameterOfSubTypeFacts {
 
-    @Condition
-    public boolean when(@Fact("fact1") Object fact1, @Fact("fact2") Object fact2, SubFacts facts) {
-        return true;
-    }
+	public static class SubFacts extends Facts {
 
-    @Action
-    public void then(@Fact("fact1") Object fact1, @Fact("fact2") Object fact2, SubFacts facts) {
-    }
+	}
 
-    public static class SubFacts extends Facts {
+	@Action
+	public void then(@Fact("fact1") Object fact1, @Fact("fact2") Object fact2, SubFacts facts) {
+	}
 
-    }
+	@Condition
+	public boolean when(@Fact("fact1") Object fact1, @Fact("fact2") Object fact2, SubFacts facts) {
+		return true;
+	}
 }
