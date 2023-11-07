@@ -23,21 +23,18 @@
  */
 package org.rossonet.ext.rules.annotation;
 
-import org.rossonet.ext.rules.annotation.Action;
-import org.rossonet.ext.rules.annotation.Condition;
-import org.rossonet.ext.rules.annotation.Rule;
 import org.rossonet.ext.rules.api.Facts;
 
 @Rule
 public class AnnotatedRuleWithActionMethodHavingOneArgumentOfTypeFacts {
 
-    @Condition
-    public boolean when() {
-        return true;
-    }
+	@Action
+	public void then(Facts facts) {
+	}
 
-    @Action
-    public void then(Facts facts) {
-    }
+	@Condition
+	public boolean when() {
+		return true;
+	}
 
 }

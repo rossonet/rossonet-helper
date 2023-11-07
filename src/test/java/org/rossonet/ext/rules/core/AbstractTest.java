@@ -28,7 +28,6 @@ import org.mockito.Mock;
 import org.rossonet.ext.rules.api.Facts;
 import org.rossonet.ext.rules.api.Rule;
 import org.rossonet.ext.rules.api.Rules;
-import org.rossonet.ext.rules.core.DefaultRulesEngine;
 
 public abstract class AbstractTest {
 

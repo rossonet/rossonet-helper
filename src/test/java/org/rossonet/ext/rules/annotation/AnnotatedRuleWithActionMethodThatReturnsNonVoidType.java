@@ -23,28 +23,24 @@
  */
 package org.rossonet.ext.rules.annotation;
 
-import org.rossonet.ext.rules.annotation.Action;
-import org.rossonet.ext.rules.annotation.Condition;
-import org.rossonet.ext.rules.annotation.Rule;
-
 @Rule
 public class AnnotatedRuleWithActionMethodThatReturnsNonVoidType {
 
-    private boolean executed;
+	private boolean executed;
 
-    @Condition
-    private boolean when() {
-        return true;
-    }
+	public boolean isExecuted() {
+		return executed;
+	}
 
-    @Action
-    private int then() {
-        executed = true;
-        return 0;
-    }
+	@Action
+	private int then() {
+		executed = true;
+		return 0;
+	}
 
-    public boolean isExecuted() {
-        return executed;
-    }
+	@Condition
+	private boolean when() {
+		return true;
+	}
 
 }

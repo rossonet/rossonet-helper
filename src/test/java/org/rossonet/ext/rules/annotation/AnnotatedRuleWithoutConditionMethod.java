@@ -23,25 +23,22 @@
  */
 package org.rossonet.ext.rules.annotation;
 
-import org.rossonet.ext.rules.annotation.Action;
-import org.rossonet.ext.rules.annotation.Rule;
-
 @Rule
 public class AnnotatedRuleWithoutConditionMethod {
 
-    private boolean executed;
+	private boolean executed;
 
-    public boolean when() {
-        return true;
-    }
+	public boolean isExecuted() {
+		return executed;
+	}
 
-    @Action
-    public void then() {
-        executed = true;
-    }
+	@Action
+	public void then() {
+		executed = true;
+	}
 
-    public boolean isExecuted() {
-        return executed;
-    }
+	public boolean when() {
+		return true;
+	}
 
 }

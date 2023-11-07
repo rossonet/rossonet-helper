@@ -1,4 +1,4 @@
-package org.rossonet.utils.concurrent;
+package org.rossonet.ext.utils.concurrent;
 
 import java.util.concurrent.Callable;
 import java.util.concurrent.FutureTask;

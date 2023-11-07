@@ -44,7 +44,6 @@ import org.rossonet.ext.rules.annotation.AnnotatedRuleWithPriorityMethodHavingAr
 import org.rossonet.ext.rules.annotation.AnnotatedRuleWithPriorityMethodHavingNonIntegerReturnType;
 import org.rossonet.ext.rules.annotation.AnnotatedRuleWithoutActionMethod;
 import org.rossonet.ext.rules.annotation.AnnotatedRuleWithoutConditionMethod;
-import org.rossonet.ext.rules.core.RuleDefinitionValidator;
 
 public class RuleDefinitionValidatorTest {
 

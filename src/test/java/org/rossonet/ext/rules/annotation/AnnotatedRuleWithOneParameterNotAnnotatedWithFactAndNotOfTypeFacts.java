@@ -23,21 +23,16 @@
  */
 package org.rossonet.ext.rules.annotation;
 
-import org.rossonet.ext.rules.annotation.Action;
-import org.rossonet.ext.rules.annotation.Condition;
-import org.rossonet.ext.rules.annotation.Fact;
-import org.rossonet.ext.rules.annotation.Rule;
-
 @Rule
 public class AnnotatedRuleWithOneParameterNotAnnotatedWithFactAndNotOfTypeFacts {
 
-    @Condition
-    public boolean when(@Fact("fact1") Object fact1, Object fact2) {
-        return true;
-    }
+	@Action
+	public void then(@Fact("fact1") Object fact1, Object fact2) {
+	}
 
-    @Action
-    public void then(@Fact("fact1") Object fact1, Object fact2) {
-    }
+	@Condition
+	public boolean when(@Fact("fact1") Object fact1, Object fact2) {
+		return true;
+	}
 
 }

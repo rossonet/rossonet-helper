@@ -38,7 +38,6 @@ import org.rossonet.ext.rules.api.Facts;
 import org.rossonet.ext.rules.api.Rules;
 import org.rossonet.ext.rules.core.BasicRule;
 import org.rossonet.ext.rules.core.DefaultRulesEngine;
-import org.rossonet.ext.rules.support.composite.ConditionalRuleGroup;
 
 public class ConditionalRuleGroupTest {
 

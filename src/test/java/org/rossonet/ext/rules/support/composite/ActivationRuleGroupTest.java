@@ -31,7 +31,6 @@ import org.rossonet.ext.rules.annotation.Condition;
 import org.rossonet.ext.rules.api.Facts;
 import org.rossonet.ext.rules.api.Rules;
 import org.rossonet.ext.rules.core.DefaultRulesEngine;
-import org.rossonet.ext.rules.support.composite.ActivationRuleGroup;
 
 public class ActivationRuleGroupTest {
 

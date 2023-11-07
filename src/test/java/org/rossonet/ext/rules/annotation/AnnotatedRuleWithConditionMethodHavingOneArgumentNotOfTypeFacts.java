@@ -23,27 +23,23 @@
  */
 package org.rossonet.ext.rules.annotation;
 
-import org.rossonet.ext.rules.annotation.Action;
-import org.rossonet.ext.rules.annotation.Condition;
-import org.rossonet.ext.rules.annotation.Rule;
-
 @Rule
 public class AnnotatedRuleWithConditionMethodHavingOneArgumentNotOfTypeFacts {
 
-    private boolean executed;
+	private boolean executed;
 
-    @Condition
-    public boolean when(int i) {
-        return i == 0;
-    }
+	public boolean isExecuted() {
+		return executed;
+	}
 
-    @Action
-    public void then() {
-        executed = true;
-    }
+	@Action
+	public void then() {
+		executed = true;
+	}
 
-    public boolean isExecuted() {
-        return executed;
-    }
+	@Condition
+	public boolean when(int i) {
+		return i == 0;
+	}
 
 }

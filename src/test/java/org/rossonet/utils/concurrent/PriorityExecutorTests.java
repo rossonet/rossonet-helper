@@ -1,6 +1,8 @@
 package org.rossonet.utils.concurrent;
 
 import org.junit.jupiter.api.Test;
+import org.rossonet.ext.utils.concurrent.PriorityExecutorService;
+import org.rossonet.ext.utils.concurrent.PriorityExecutors;
 
 public class PriorityExecutorTests {
 

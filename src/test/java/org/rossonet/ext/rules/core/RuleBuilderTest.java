@@ -30,8 +30,6 @@ import org.mockito.Mock;
 import org.rossonet.ext.rules.api.Action;
 import org.rossonet.ext.rules.api.Condition;
 import org.rossonet.ext.rules.api.Rule;
-import org.rossonet.ext.rules.core.DefaultRule;
-import org.rossonet.ext.rules.core.RuleBuilder;
 
 public class RuleBuilderTest {
 

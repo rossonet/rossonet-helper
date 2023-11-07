@@ -28,7 +28,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 import org.junit.jupiter.api.Test;
 import org.rossonet.ext.rules.api.Facts;
 import org.rossonet.ext.rules.api.Rules;
-import org.rossonet.ext.rules.core.BasicRule;
 
 public class BasicRuleTest extends AbstractTest {
 
