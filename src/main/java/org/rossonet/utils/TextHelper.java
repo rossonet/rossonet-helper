@@ -2,17 +2,15 @@ package org.rossonet.utils;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
-import java.io.File;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.Serializable;
-import java.nio.file.Files;
-import java.nio.file.Paths;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.Base64;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -27,7 +25,80 @@ import org.json.JSONObject;
 
 public final class TextHelper {
 
-	private static final String ENCRYPTION_ALGORITHM = "AES";
+	private static String encryptionAlgorithm = "AES";
+
+	// Reset
+	public static final String ANSI_RESET = "\033[0m"; // Text Reset
+
+	// Regular Colors
+	public static final String ANSI_BLACK = "\033[0;30m"; // BLACK
+	public static final String ANSI_RED = "\033[0;31m"; // RED
+	public static final String ANSI_GREEN = "\033[0;32m"; // GREEN
+	public static final String ANSI_YELLOW = "\033[0;33m"; // YELLOW
+	public static final String ANSI_BLUE = "\033[0;34m"; // BLUE
+	public static final String ANSI_PURPLE = "\033[0;35m"; // PURPLE
+	public static final String ANSI_CYAN = "\033[0;36m"; // CYAN
+	public static final String ANSI_WHITE = "\033[0;37m"; // WHITE
+
+	// Bold
+	public static final String ANSI_BLACK_BOLD = "\033[1;30m"; // BLACK
+	public static final String ANSI_RED_BOLD = "\033[1;31m"; // RED
+	public static final String ANSI_GREEN_BOLD = "\033[1;32m"; // GREEN
+	public static final String ANSI_YELLOW_BOLD = "\033[1;33m"; // YELLOW
+	public static final String ANSI_BLUE_BOLD = "\033[1;34m"; // BLUE
+	public static final String ANSI_PURPLE_BOLD = "\033[1;35m"; // PURPLE
+	public static final String ANSI_CYAN_BOLD = "\033[1;36m"; // CYAN
+	public static final String ANSI_WHITE_BOLD = "\033[1;37m"; // WHITE
+
+	// Underline
+	public static final String ANSI_BLACK_UNDERLINED = "\033[4;30m"; // BLACK
+	public static final String ANSI_RED_UNDERLINED = "\033[4;31m"; // RED
+	public static final String ANSI_GREEN_UNDERLINED = "\033[4;32m"; // GREEN
+	public static final String ANSI_YELLOW_UNDERLINED = "\033[4;33m"; // YELLOW
+	public static final String ANSI_BLUE_UNDERLINED = "\033[4;34m"; // BLUE
+	public static final String ANSI_PURPLE_UNDERLINED = "\033[4;35m"; // PURPLE
+	public static final String ANSI_CYAN_UNDERLINED = "\033[4;36m"; // CYAN
+	public static final String ANSI_WHITE_UNDERLINED = "\033[4;37m"; // WHITE
+
+	// Background
+	public static final String ANSI_BLACK_BACKGROUND = "\033[40m"; // BLACK
+	public static final String ANSI_RED_BACKGROUND = "\033[41m"; // RED
+	public static final String ANSI_GREEN_BACKGROUND = "\033[42m"; // GREEN
+	public static final String ANSI_YELLOW_BACKGROUND = "\033[43m"; // YELLOW
+	public static final String ANSI_BLUE_BACKGROUND = "\033[44m"; // BLUE
+	public static final String ANSI_PURPLE_BACKGROUND = "\033[45m"; // PURPLE
+	public static final String ANSI_CYAN_BACKGROUND = "\033[46m"; // CYAN
+	public static final String ANSI_WHITE_BACKGROUND = "\033[47m"; // WHITE
+
+	// High Intensity
+	public static final String ANSI_BLACK_BRIGHT = "\033[0;90m"; // BLACK
+	public static final String ANSI_RED_BRIGHT = "\033[0;91m"; // RED
+	public static final String ANSI_GREEN_BRIGHT = "\033[0;92m"; // GREEN
+	public static final String ANSI_YELLOW_BRIGHT = "\033[0;93m"; // YELLOW
+	public static final String ANSI_BLUE_BRIGHT = "\033[0;94m"; // BLUE
+	public static final String ANSI_PURPLE_BRIGHT = "\033[0;95m"; // PURPLE
+	public static final String ANSI_CYAN_BRIGHT = "\033[0;96m"; // CYAN
+	public static final String ANSI_WHITE_BRIGHT = "\033[0;97m"; // WHITE
+
+	// Bold High Intensity
+	public static final String ANSI_BLACK_BOLD_BRIGHT = "\033[1;90m"; // BLACK
+	public static final String ANSI_RED_BOLD_BRIGHT = "\033[1;91m"; // RED
+	public static final String ANSI_GREEN_BOLD_BRIGHT = "\033[1;92m"; // GREEN
+	public static final String ANSI_YELLOW_BOLD_BRIGHT = "\033[1;93m";// YELLOW
+	public static final String ANSI_BLUE_BOLD_BRIGHT = "\033[1;94m"; // BLUE
+	public static final String ANSI_PURPLE_BOLD_BRIGHT = "\033[1;95m";// PURPLE
+	public static final String ANSI_CYAN_BOLD_BRIGHT = "\033[1;96m"; // CYAN
+	public static final String ANSI_WHITE_BOLD_BRIGHT = "\033[1;97m"; // WHITE
+
+	// High Intensity backgrounds
+	public static final String ANSI_BLACK_BACKGROUND_BRIGHT = "\033[0;100m";// BLACK
+	public static final String ANSI_RED_BACKGROUND_BRIGHT = "\033[0;101m";// RED
+	public static final String ANSI_GREEN_BACKGROUND_BRIGHT = "\033[0;102m";// GREEN
+	public static final String ANSI_YELLOW_BACKGROUND_BRIGHT = "\033[0;103m";// YELLOW
+	public static final String ANSI_BLUE_BACKGROUND_BRIGHT = "\033[0;104m";// BLUE
+	public static final String ANSI_PURPLE_BACKGROUND_BRIGHT = "\033[0;105m"; // PURPLE
+	public static final String ANSI_CYAN_BACKGROUND_BRIGHT = "\033[0;106m"; // CYAN
+	public static final String ANSI_WHITE_BACKGROUND_BRIGHT = "\033[0;107m"; // WHITE
 
 	public static String convertByteArrayToHexString(final byte[] arrayBytes) {
 		final StringBuffer stringBuffer = new StringBuffer();
@@ -37,31 +108,36 @@ public final class TextHelper {
 		return stringBuffer.toString();
 	}
 
-	public static byte[] decryptData(final byte[] encryptedData, final byte[] key) throws NoSuchAlgorithmException,
-			NoSuchPaddingException, InvalidKeyException, IllegalBlockSizeException, BadPaddingException {
-		final Cipher c = Cipher.getInstance(ENCRYPTION_ALGORITHM);
-		final SecretKeySpec k = new SecretKeySpec(key, ENCRYPTION_ALGORITHM);
+	public static byte[] decryptData(final byte[] encryptedData, final byte[] key) throws InvalidKeyException,
+			NoSuchAlgorithmException, NoSuchPaddingException, IllegalBlockSizeException, BadPaddingException {
+		return decryptData(encryptedData, key, encryptionAlgorithm);
+	}
+
+	public static byte[] decryptData(final byte[] encryptedData, final byte[] key, String encryptionAlgorithm)
+			throws NoSuchAlgorithmException, NoSuchPaddingException, InvalidKeyException, IllegalBlockSizeException,
+			BadPaddingException {
+		final Cipher c = Cipher.getInstance(encryptionAlgorithm);
+		final SecretKeySpec k = new SecretKeySpec(key, encryptionAlgorithm);
 		c.init(Cipher.DECRYPT_MODE, k);
 		return c.doFinal(encryptedData);
 	}
 
-	public static void deleteDirectory(final File file) {
-		if (Files.exists(Paths.get(file.getAbsolutePath()))) {
-			for (final File subfile : file.listFiles()) {
-				if (subfile.isDirectory()) {
-					deleteDirectory(subfile);
-				}
-				subfile.delete();
-			}
-		}
-	}
-
 	public static byte[] encryptData(final byte[] dataToEncrypt, final byte[] key) throws IllegalBlockSizeException,
 			BadPaddingException, NoSuchAlgorithmException, NoSuchPaddingException, InvalidKeyException {
-		final Cipher c = Cipher.getInstance(ENCRYPTION_ALGORITHM);
-		final SecretKeySpec k = new SecretKeySpec(key, ENCRYPTION_ALGORITHM);
+		return encryptData(dataToEncrypt, key, encryptionAlgorithm);
+	}
+
+	public static byte[] encryptData(final byte[] dataToEncrypt, final byte[] key, String encryptionAlgorithm)
+			throws IllegalBlockSizeException, BadPaddingException, NoSuchAlgorithmException, NoSuchPaddingException,
+			InvalidKeyException {
+		final Cipher c = Cipher.getInstance(encryptionAlgorithm);
+		final SecretKeySpec k = new SecretKeySpec(key, encryptionAlgorithm);
 		c.init(Cipher.ENCRYPT_MODE, k);
 		return c.doFinal(dataToEncrypt);
+	}
+
+	public static String getDefaultEncryptionAlgorithm() {
+		return encryptionAlgorithm;
 	}
 
 	public static JSONObject getJsonFromMap(final Map<String, String> map) {
@@ -93,6 +169,23 @@ public final class TextHelper {
 
 	}
 
+	public static String joinCollection(Collection<?> data, String separator) {
+		if (data.isEmpty()) {
+			return "";
+		}
+		final StringBuilder result = new StringBuilder();
+		boolean first = true;
+		for (final Object d : data.toArray()) {
+			if (first) {
+				first = false;
+			} else {
+				result.append(separator);
+			}
+			result.append(d);
+		}
+		return result.toString();
+	}
+
 	@SuppressWarnings("unchecked")
 	public static <O extends Serializable> O objectFromString(final String string, final Class<O> clazz)
 			throws IOException, ClassNotFoundException {
@@ -109,6 +202,10 @@ public final class TextHelper {
 		oos.writeObject(object);
 		oos.close();
 		return Base64.getEncoder().encodeToString(baos.toByteArray());
+	}
+
+	public static void setDefaultEncryptionAlgorithm(String encryptionAlgorithm) {
+		TextHelper.encryptionAlgorithm = encryptionAlgorithm;
 	}
 
 	public static List<String> splitFixSize(final String s, final int chunkSize) {
