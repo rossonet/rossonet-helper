@@ -11,7 +11,7 @@ buildscript {
 
 description = "Rossonet's static methods"
 group = 'net.rossonet.commons'
-version = '0.4.1'
+version = '0.4.2'
 
 ext {
 	sourceCompatibility = 1.8
@@ -44,6 +44,7 @@ dependencies {
   implementation group: 'org.bouncycastle', name: 'bcpkix-jdk18on', version: '1.76'
   implementation group: 'org.bouncycastle', name: 'bcutil-jdk18on', version: '1.76'
   implementation group: 'org.apache.commons', name: 'commons-jexl3', version: '3.3'
+  implementation group: 'org.mvel', name: 'mvel2', version: '2.5.0.Final'
   implementation group: 'com.github.oshi', name: 'oshi-core', version: '6.4.7'
   testImplementation 'org.junit.jupiter:junit-jupiter-api:5.10.0'
   testImplementation group: 'com.ginsberg', name: 'junit5-system-exit', version: '1.1.2'
