@@ -5,14 +5,63 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 import java.util.function.Consumer;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class SystemCommandHelper {
+
+	public static class QuotedStringTokenizer {
+
+		private final String line;
+		private final List<String> tokens = new ArrayList<>();
+
+		private final Matcher matcher;
+
+		private int index;
+
+		public QuotedStringTokenizer(String line) {
+			this.line = line.trim();
+			matcher = QUOTED_PATTERN.matcher(line);
+			while (!matcher.hitEnd()) {
+				String data;
+				if (matcher.find()) {
+					if (matcher.group(1) != null) {
+						data = matcher.group(1);
+					} else {
+						data = matcher.group(2);
+					}
+					tokens.add(data);
+				}
+			}
+		}
+
+		public String getLine() {
+			return line;
+		}
+
+		public List<String> getTokens() {
+			return tokens;
+		}
+
+		public boolean hasMoreTokens() {
+			return index < tokens.size();
+		}
+
+		public String nextToken() {
+			final String data = tokens.get(index);
+			index++;
+			return data;
+		}
+
+	}
 
 	public static class StreamGobbler implements Runnable {
 		private final InputStream inputStream;
@@ -31,6 +80,8 @@ public class SystemCommandHelper {
 			new BufferedReader(new InputStreamReader(errorStream)).lines().forEach(consumer);
 		}
 	}
+
+	private final static Pattern QUOTED_PATTERN = Pattern.compile("\"([^\"]*)\"|(\\S+)");
 
 	public static void executeSystemCommandAndWait(File baseDirectory, String[] command, Consumer<String> consumer,
 			int timeoutMilliSeconds) throws IOException, InterruptedException, ExecutionException, TimeoutException {
