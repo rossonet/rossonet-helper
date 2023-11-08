@@ -46,7 +46,7 @@ dependencies {
   implementation group: 'org.apache.commons', name: 'commons-jexl3', version: '3.3'
   implementation group: 'org.mvel', name: 'mvel2', version: '2.5.0.Final'
   implementation group: 'com.github.oshi', name: 'oshi-core', version: '6.4.7'
-  testImplementation 'org.junit.jupiter:junit-jupiter-api:5.10.0'
+  testImplementation 'org.junit.jupiter:junit-jupiter-api:5.10.1'
   testImplementation group: 'com.ginsberg', name: 'junit5-system-exit', version: '1.1.2'
   testImplementation group: 'org.assertj', name: 'assertj-core', version: '3.24.2'
   testImplementation group: 'org.mockito', name: 'mockito-core', version: '5.6.0'
