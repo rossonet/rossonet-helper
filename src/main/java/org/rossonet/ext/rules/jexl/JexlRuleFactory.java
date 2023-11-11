@@ -62,6 +62,7 @@ public class JexlRuleFactory extends AbstractRuleFactory {
 		return createRule(ruleDefinitions.get(0));
 	}
 
+	@Override
 	public Rules createRules(Reader rulesDescriptor) throws Exception {
 		Objects.requireNonNull(rulesDescriptor, "rulesDescriptor cannot be null");
 		final Rules rules = new Rules();
@@ -82,5 +83,10 @@ public class JexlRuleFactory extends AbstractRuleFactory {
 			rule.then(action);
 		}
 		return rule;
+	}
+
+	@Override
+	protected RuleDefinitionReader getRuleDefinitionReader() {
+		return reader;
 	}
 }

@@ -23,14 +23,18 @@
  */
 package org.rossonet.ext.rules.support;
 
+import java.io.Reader;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Objects;
 
 import org.rossonet.ext.rules.api.Rule;
+import org.rossonet.ext.rules.api.Rules;
 import org.rossonet.ext.rules.support.composite.ActivationRuleGroup;
 import org.rossonet.ext.rules.support.composite.CompositeRule;
 import org.rossonet.ext.rules.support.composite.ConditionalRuleGroup;
 import org.rossonet.ext.rules.support.composite.UnitRuleGroup;
+import org.rossonet.ext.rules.support.reader.RuleDefinitionReader;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -89,6 +93,18 @@ public abstract class AbstractRuleFactory {
 		}
 	}
 
+	public Rules createRules(Reader rulesDescriptor) throws Exception {
+		Objects.requireNonNull(rulesDescriptor, "rulesDescriptor cannot be null");
+		final Rules rules = new Rules();
+		final List<RuleDefinition> ruleDefinitions = getRuleDefinitionReader().read(rulesDescriptor);
+		for (final RuleDefinition ruleDefinition : ruleDefinitions) {
+			rules.register(createRule(ruleDefinition));
+		}
+		return rules;
+	}
+
 	protected abstract Rule createSimpleRule(RuleDefinition ruleDefinition);
+
+	protected abstract RuleDefinitionReader getRuleDefinitionReader();
 
 }
