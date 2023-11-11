@@ -96,6 +96,7 @@ public class MVELRuleFactory extends AbstractRuleFactory {
 	 * @return a set of rules
 	 * @throws Exception if unable to create rules from the descriptor
 	 */
+	@Override
 	public Rules createRules(Reader rulesDescriptor) throws Exception {
 		final Rules rules = new Rules();
 		final List<RuleDefinition> ruleDefinitions = reader.read(rulesDescriptor);
@@ -114,6 +115,11 @@ public class MVELRuleFactory extends AbstractRuleFactory {
 			mvelRule.then(action);
 		}
 		return mvelRule;
+	}
+
+	@Override
+	protected RuleDefinitionReader getRuleDefinitionReader() {
+		return reader;
 	}
 
 }

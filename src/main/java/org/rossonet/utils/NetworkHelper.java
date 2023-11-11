@@ -5,6 +5,8 @@ import java.net.Inet4Address;
 import java.net.InetAddress;
 import java.net.NetworkInterface;
 import java.net.ServerSocket;
+import java.net.Socket;
+import java.net.SocketAddress;
 import java.net.SocketException;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
@@ -14,6 +16,8 @@ import java.util.Enumeration;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -37,6 +41,36 @@ public final class NetworkHelper {
 			}
 		}
 		return !portTaken;
+	}
+
+	public static boolean checkTcpPort(SocketAddress inetSocketAddress, int socketTimeoutSeconds) throws IOException {
+		final AtomicBoolean ok = new AtomicBoolean(false);
+		try {
+			ThreadHelper.runWithTimeout(new Runnable() {
+				@Override
+				public void run() {
+					Socket s = null;
+					try {
+						s = new Socket();
+						s.setSoTimeout(socketTimeoutSeconds * 3);
+						s.connect(inetSocketAddress);
+						ok.set(true);
+					} catch (final Exception e) {
+						ok.set(false);
+					} finally {
+						if (s != null) {
+							try {
+								s.close();
+							} catch (final IOException e) {
+							}
+						}
+					}
+				}
+			}, socketTimeoutSeconds, TimeUnit.SECONDS);
+			return ok.get();
+		} catch (final Exception e) {
+			return false;
+		}
 	}
 
 	public static int findAvailablePort(final int faultPort) {
