@@ -6,7 +6,7 @@ https://mvnrepository.com/artifact/net.rossonet.commons/rossonet-helper
 
 ## Rossonet Console
 
-ghcr.io/rossonet/rossonet-helper:latest
+https://hub.docker.com/repository/docker/rossonet/dev-console/general
 
 ### Project sponsor 
 
