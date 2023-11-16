@@ -1,12 +1,12 @@
-# Rossonet's Helper libraries and Rossonet Console
+# Rossonet's Helper libraries and Rossonet Dev Console
 
 ## Maven Repository
 
 https://mvnrepository.com/artifact/net.rossonet.commons/rossonet-helper
 
-## Rossonet Console
+## Rossonet Dev Console
 
-https://hub.docker.com/repository/docker/rossonet/dev-console/general
+https://hub.docker.com/r/rossonet/dev-console
 
 ### Project sponsor 
 
