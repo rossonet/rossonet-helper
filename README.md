@@ -1,4 +1,12 @@
-# Rossonet's Helper libraries
+# Rossonet's Helper libraries and Rossonet Console
+
+## Maven Repository
+
+https://mvnrepository.com/artifact/net.rossonet.commons/rossonet-helper
+
+## Rossonet Console
+
+ghcr.io/rossonet/rossonet-helper:latest
 
 ### Project sponsor 
 
