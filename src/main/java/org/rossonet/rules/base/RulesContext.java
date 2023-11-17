@@ -1,7 +1,10 @@
 package org.rossonet.rules.base;
 
 import java.lang.reflect.InvocationTargetException;
+import java.time.Instant;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
@@ -14,11 +17,13 @@ import org.slf4j.LoggerFactory;
 
 public class RulesContext {
 
+	private static final String DEFAULT_CLASS_LIST_SEPARATOR = ", ";
+
 	private final static Map<String, Class<? extends Command>> commands = new HashMap<>();
 
 	private static Logger logger = LoggerFactory.getLogger(RulesContext.class);
 
-	public static int registerCommand(String label, Class<? extends Command> command) {
+	public static int registerCommand(final String label, final Class<? extends Command> command) {
 		commands.put(label, command);
 		return commands.size();
 	}
@@ -27,20 +32,20 @@ public class RulesContext {
 
 	private final Facts facts;
 
-	public RulesContext(CommandQueue commandQueue, Facts facts) {
+	public RulesContext(final CommandQueue commandQueue, final Facts facts) {
 		this.facts = facts;
 		this.commandQueue = commandQueue;
 	}
 
-	public <T extends Object> void addFact(String factName, T payload) {
+	public <T extends Object> void addFact(final String factName, final T payload) {
 		facts.add(new Fact<T>(factName, payload));
 	}
 
-	public void error(String msg) {
+	public void error(final String msg) {
 		logger.error(TextHelper.ANSI_RED_BOLD + msg + TextHelper.ANSI_RESET);
 	}
 
-	public void exec(String command, Object... data) {
+	public void exec(final String command, final Object... data) {
 		if (commands.containsKey(command)) {
 			try {
 				final Command commandObject = (Command) commands.get(command).getConstructors()[0].newInstance();
@@ -58,11 +63,36 @@ public class RulesContext {
 		}
 	}
 
-	public void info(String msg) {
+	public List<Object> getByClass(final String factClass) {
+		final List<Object> result = new ArrayList<>();
+		for (final Fact<?> f : facts) {
+			final String simpleName = f.getValue().getClass().getSimpleName();
+			final String name = f.getValue().getClass().getName();
+			if (simpleName.equals(factClass) || name.startsWith(factClass)) {
+				result.add(f.getValue());
+			}
+		}
+		return result;
+	}
+
+	public long getEpochMs() {
+		return Instant.now().toEpochMilli();
+	}
+
+	public void info(final String msg) {
 		logger.info(TextHelper.ANSI_PURPLE_BOLD + msg + TextHelper.ANSI_RESET);
 	}
 
-	public boolean isPresent(String factName) {
+	public boolean isCachedMemoryPresent() {
+		if (facts.asMap().containsKey(AbstractBaseRulesEngine.MEM)
+				&& facts.asMap().get(AbstractBaseRulesEngine.MEM).getClass().equals(CachedMemory.class)) {
+			return true;
+		} else {
+			return false;
+		}
+	}
+
+	public boolean isPresent(final String factName) {
 		for (final Fact<?> f : facts) {
 			if (f.getName().equals(factName)) {
 				return true;
@@ -71,7 +101,37 @@ public class RulesContext {
 		return false;
 	}
 
-	public void removeFact(String factName) {
+	public boolean isPresentByClass(final String factClass) {
+		for (final Fact<?> f : facts) {
+			final String simpleName = f.getValue().getClass().getSimpleName();
+			final String name = f.getValue().getClass().getName();
+			if (simpleName.equals(factClass) || name.equals(factClass)) {
+				return true;
+			}
+		}
+		return false;
+	}
+
+	public String listAllFactsByClass() {
+		return listAllFactsByClass(DEFAULT_CLASS_LIST_SEPARATOR);
+	}
+
+	public String listAllFactsByClass(final String separator) {
+		final StringBuilder result = new StringBuilder();
+		boolean first = true;
+		for (final Fact<?> f : facts) {
+			final String simpleName = f.getValue().getClass().getSimpleName();
+			final String name = f.getValue().getClass().getName();
+			if (!first) {
+				result.append(separator);
+			}
+			result.append(f.getName() + " - " + simpleName + " [" + name + "]");
+			first = false;
+		}
+		return result.toString();
+	}
+
+	public void removeFact(final String factName) {
 		Fact<?> toDelete = null;
 		for (final Fact<?> f : facts) {
 			if (f.getName().equals(factName)) {
@@ -84,7 +144,7 @@ public class RulesContext {
 		}
 	}
 
-	public boolean test(boolean condition) {
+	public boolean test(final boolean condition) {
 		logger.info("called test condition " + condition);
 		return condition;
 	}
@@ -104,7 +164,7 @@ public class RulesContext {
 		return UUID.randomUUID();
 	}
 
-	public void warning(String msg) {
+	public void warning(final String msg) {
 		logger.warn(TextHelper.ANSI_PURPLE_BOLD + msg + TextHelper.ANSI_RESET);
 	}
 }
