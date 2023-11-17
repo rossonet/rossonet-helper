@@ -115,7 +115,7 @@ public final class TextHelper {
 		return decryptData(encryptedData, key, encryptionAlgorithm);
 	}
 
-	public static byte[] decryptData(final byte[] encryptedData, final byte[] key, String encryptionAlgorithm)
+	public static byte[] decryptData(final byte[] encryptedData, final byte[] key, final String encryptionAlgorithm)
 			throws NoSuchAlgorithmException, NoSuchPaddingException, InvalidKeyException, IllegalBlockSizeException,
 			BadPaddingException {
 		final Cipher c = Cipher.getInstance(encryptionAlgorithm);
@@ -129,7 +129,7 @@ public final class TextHelper {
 		return encryptData(dataToEncrypt, key, encryptionAlgorithm);
 	}
 
-	public static byte[] encryptData(final byte[] dataToEncrypt, final byte[] key, String encryptionAlgorithm)
+	public static byte[] encryptData(final byte[] dataToEncrypt, final byte[] key, final String encryptionAlgorithm)
 			throws IllegalBlockSizeException, BadPaddingException, NoSuchAlgorithmException, NoSuchPaddingException,
 			InvalidKeyException {
 		final Cipher c = Cipher.getInstance(encryptionAlgorithm);
@@ -138,14 +138,14 @@ public final class TextHelper {
 		return c.doFinal(dataToEncrypt);
 	}
 
-	public static Map<String, PlaceHolder> extractPlaceHolderFromText(String originalText, String startPlaceholderText,
-			String stopPlaceholderText) {
+	public static Map<String, PlaceHolder> extractPlaceHolderFromText(final String originalText,
+			final String startPlaceholderText, final String stopPlaceholderText) {
 		final Pattern pattern = Pattern.compile(startPlaceholderText + ".+?" + stopPlaceholderText);
 		return extractPlaceHolderFromText(originalText, startPlaceholderText, stopPlaceholderText, pattern);
 	}
 
-	public static Map<String, PlaceHolder> extractPlaceHolderFromText(String originalText, String startPlaceholderText,
-			String stopPlaceholderText, final Pattern pattern) {
+	public static Map<String, PlaceHolder> extractPlaceHolderFromText(final String originalText,
+			final String startPlaceholderText, final String stopPlaceholderText, final Pattern pattern) {
 		final Matcher m = pattern.matcher(originalText);
 		final Map<String, PlaceHolder> placeHolders = new HashMap<>();
 		if (m.find()) {
@@ -197,7 +197,7 @@ public final class TextHelper {
 
 	}
 
-	public static String joinCollection(Collection<?> data, String separator) {
+	public static String joinCollection(final Collection<?> data, final String separator) {
 		if (data.isEmpty()) {
 			return "";
 		}
@@ -232,14 +232,14 @@ public final class TextHelper {
 		return Base64.getEncoder().encodeToString(baos.toByteArray());
 	}
 
-	public static String popolateTextPlaceholdersFromData(String originalText, Map<String, String> data,
-			String startPlaceholderText, String stopPlaceholderText) {
+	public static String popolateTextPlaceholdersFromData(final String originalText, final Map<String, String> data,
+			final String startPlaceholderText, final String stopPlaceholderText) {
 		final Pattern pattern = Pattern.compile(startPlaceholderText + ".+?" + stopPlaceholderText);
 		return popolateTextPlaceholdersFromData(originalText, data, startPlaceholderText, stopPlaceholderText, pattern);
 	}
 
-	public static String popolateTextPlaceholdersFromData(String originalText, Map<String, String> data,
-			String startPlaceholderText, String stopPlaceholderText, final Pattern PATTERN) {
+	public static String popolateTextPlaceholdersFromData(final String originalText, final Map<String, String> data,
+			final String startPlaceholderText, final String stopPlaceholderText, final Pattern PATTERN) {
 		final Matcher m = PATTERN.matcher(originalText);
 		final StringBuilder reply = new StringBuilder();
 		if (m.find()) {
@@ -256,11 +256,13 @@ public final class TextHelper {
 				indexStart = m.end();
 			} while (m.find());
 			reply.append(originalText.substring(indexStart, originalText.length()));
+		} else {
+			reply.append(originalText);
 		}
 		return reply.toString();
 	}
 
-	public static void setDefaultEncryptionAlgorithm(String encryptionAlgorithm) {
+	public static void setDefaultEncryptionAlgorithm(final String encryptionAlgorithm) {
 		TextHelper.encryptionAlgorithm = encryptionAlgorithm;
 	}
 
