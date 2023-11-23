@@ -61,6 +61,7 @@ import org.bouncycastle.cert.jcajce.JcaX509CertificateHolder;
 import org.bouncycastle.crypto.util.PrivateKeyFactory;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import org.bouncycastle.openssl.PEMException;
+import org.bouncycastle.openssl.PEMKeyPair;
 import org.bouncycastle.openssl.PEMParser;
 import org.bouncycastle.openssl.jcajce.JcaPEMKeyConverter;
 import org.bouncycastle.openssl.jcajce.JcaPEMWriter;
@@ -87,13 +88,43 @@ import org.bouncycastle.pkcs.PKCS10CertificationRequestBuilder;
 public class SslHelper {
 
 	public static String DEFAULT_CONTEXT_TLS_PROTOCOL = "TLSv1.2";
-	public static String DEFAULT_SIGNATURE_ALGORITHM = "SHA256withRSA";
 
+	public static String DEFAULT_SIGNATURE_ALGORITHM = "SHA256withRSA";
 	public static final int SUBJECT_ALT_NAME_DNS_NAME = GeneralName.dNSName;
 
 	public static final int SUBJECT_ALT_NAME_IP_ADDRESS = GeneralName.iPAddress;
 
 	public static final int SUBJECT_ALT_NAME_URI = GeneralName.uniformResourceIdentifier;
+
+	public static String certificateStringFromOneLine(final String certificateInOneLine) {
+		final StringBuilder result = new StringBuilder();
+		String header = null;
+		if (certificateInOneLine.contains("-----BEGIN CERTIFICATE-----")) {
+			header = "-----BEGIN CERTIFICATE-----";
+		} else if (certificateInOneLine.contains("-----BEGIN RSA PRIVATE KEY-----")) {
+			header = "-----BEGIN RSA PRIVATE KEY-----";
+		} else if (certificateInOneLine.contains("-----BEGIN PRIVATE KEY-----")) {
+			header = "-----BEGIN PRIVATE KEY-----";
+		}
+		String footer = null;
+		if (certificateInOneLine.contains("-----END CERTIFICATE-----")) {
+			footer = "-----END CERTIFICATE-----";
+		} else if (certificateInOneLine.contains("-----END RSA PRIVATE KEY-----")) {
+			footer = "-----END RSA PRIVATE KEY-----";
+		} else if (certificateInOneLine.contains("-----END PRIVATE KEY-----")) {
+			footer = "-----END PRIVATE KEY-----";
+		}
+		if (header != null && footer != null) {
+			final String payload = certificateInOneLine.replace(header, "").replace(footer, "");
+			for (final String line : TextHelper.splitFixSize(payload, 64)) {
+				result.append(line);
+				result.append("\n");
+			}
+			final String converted = header + "\n" + result.toString() + footer;
+			return converted;
+		}
+		return result.toString();
+	}
 
 	public static boolean checkSignatureWithPayload(final PublicKey pubKey, final PrivateKey privKey)
 			throws NoSuchAlgorithmException, SignatureException, InvalidKeyException {
@@ -178,10 +209,10 @@ public class SslHelper {
 		reader.close();
 		final X509Certificate cert = certificateConverter.getCertificate(certHolder);
 		reader = new PEMParser(new FileReader(keyFile.toFile().getAbsolutePath()));
-		final PrivateKeyInfo privateKeyInfo = (PrivateKeyInfo) reader.readObject();
+		final PEMKeyPair pemKeyPair = (PEMKeyPair) reader.readObject();
 		reader.close();
 		final KeyStore keyStore = createKeyStore(caAlias, caCert, certificateAlias, cert, privateKeyAlias,
-				privateKeyInfo, keystorePassword);
+				pemKeyPair.getPrivateKeyInfo(), keystorePassword);
 		return keyStore;
 	}
 
@@ -287,6 +318,15 @@ public class SslHelper {
 		crtFile.toFile().delete();
 		keyFile.toFile().delete();
 		return sslContext;
+	}
+
+	public static <OBJECT_TYPE extends Object> String encodeInPemFormat(final OBJECT_TYPE data) throws IOException {
+		final StringWriter writer = new StringWriter();
+		final JcaPEMWriter pemWriter = new JcaPEMWriter(writer);
+		pemWriter.writeObject(data);
+		pemWriter.flush();
+		pemWriter.close();
+		return writer.toString();
 	}
 
 	public static String getDefaultCharSet() {
@@ -437,14 +477,5 @@ public class SslHelper {
 
 	private SslHelper() {
 		throw new UnsupportedOperationException("Just for static usage");
-	}
-
-	public <OBJECT_TYPE extends Object> String encodeInPemFormat(final OBJECT_TYPE data) throws IOException {
-		final StringWriter writer = new StringWriter();
-		final JcaPEMWriter pemWriter = new JcaPEMWriter(writer);
-		pemWriter.writeObject(data);
-		pemWriter.flush();
-		pemWriter.close();
-		return writer.toString();
 	}
 }
