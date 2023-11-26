@@ -34,6 +34,16 @@ import java.util.Objects;
  */
 public class Fact<T> {
 
+	private static int maxCharsInValueToString = 80;
+
+	public static int getMaxCharsInValueToString() {
+		return maxCharsInValueToString;
+	}
+
+	public static void setMaxCharsInValueToString(final int maxCharsInValueToString) {
+		Fact.maxCharsInValueToString = maxCharsInValueToString;
+	}
+
 	private final String name;
 	private final T value;
 
@@ -43,7 +53,7 @@ public class Fact<T> {
 	 * @param name  of the fact
 	 * @param value of the fact
 	 */
-	public Fact(String name, T value) {
+	public Fact(final String name, final T value) {
 		Objects.requireNonNull(name, "name must not be null");
 		Objects.requireNonNull(value, "value must not be null");
 		this.name = name;
@@ -51,7 +61,7 @@ public class Fact<T> {
 	}
 
 	@Override
-	public boolean equals(Object o) {
+	public boolean equals(final Object o) {
 		if (this == o) {
 			return true;
 		}
@@ -93,6 +103,14 @@ public class Fact<T> {
 
 	@Override
 	public String toString() {
-		return "Fact{" + "name='" + name + '\'' + ", value=" + value + '}';
+		String valueString = "";
+		if (value != null) {
+			if (value.toString().length() <= maxCharsInValueToString) {
+				valueString = value.toString();
+			} else {
+				valueString = value.toString().substring(0, maxCharsInValueToString);
+			}
+		}
+		return "Fact{" + "name='" + name + '\'' + ", value=" + valueString + '}';
 	}
 }
