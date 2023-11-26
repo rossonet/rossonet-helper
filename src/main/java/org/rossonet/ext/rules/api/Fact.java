@@ -108,7 +108,7 @@ public class Fact<T> {
 			if (value.toString().length() <= maxCharsInValueToString) {
 				valueString = value.toString();
 			} else {
-				valueString = value.toString().substring(0, maxCharsInValueToString);
+				valueString = value.toString().substring(0, maxCharsInValueToString) + "[...]";
 			}
 		}
 		return "Fact{" + "name='" + name + '\'' + ", value=" + valueString + '}';
