@@ -79,6 +79,15 @@ public class RulesContext {
 		return Instant.now().toEpochMilli();
 	}
 
+	public Fact<?> getFact(final String factName) {
+		for (final Fact<?> f : facts) {
+			if (f.getName().equals(factName)) {
+				return f;
+			}
+		}
+		return null;
+	}
+
 	public void info(final String msg) {
 		logger.info(TextHelper.ANSI_PURPLE_BOLD + msg + TextHelper.ANSI_RESET);
 	}
