@@ -209,10 +209,19 @@ public class SslHelper {
 		reader.close();
 		final X509Certificate cert = certificateConverter.getCertificate(certHolder);
 		reader = new PEMParser(new FileReader(keyFile.toFile().getAbsolutePath()));
-		final PEMKeyPair pemKeyPair = (PEMKeyPair) reader.readObject();
+		final Object readObject = reader.readObject();
+		PrivateKeyInfo privateKeyInfo = null;
+		if (readObject instanceof PrivateKeyInfo) {
+			privateKeyInfo = (PrivateKeyInfo) readObject;
+		} else if (readObject instanceof PEMKeyPair) {
+			final PEMKeyPair pemKeyPair = (PEMKeyPair) readObject;
+			privateKeyInfo = pemKeyPair.getPrivateKeyInfo();
+		} else {
+			throw new CertificateException("private key not valid");
+		}
 		reader.close();
 		final KeyStore keyStore = createKeyStore(caAlias, caCert, certificateAlias, cert, privateKeyAlias,
-				pemKeyPair.getPrivateKeyInfo(), keystorePassword);
+				privateKeyInfo, keystorePassword);
 		return keyStore;
 	}
 
