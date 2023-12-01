@@ -23,7 +23,14 @@
  */
 package org.rossonet.ext.rules.api;
 
+import java.nio.charset.StandardCharsets;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
+import java.time.Instant;
 import java.util.Objects;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * A class representing a named fact. Facts have unique names within a
@@ -31,13 +38,34 @@ import java.util.Objects;
  * 
  * @param <T> type of the fact
  * @author Mahmoud Ben Hassine
+ * @author Andrea Ambrosini
  */
 public class Fact<T> {
-
+	private static final Logger LOGGER = LoggerFactory.getLogger(Fact.class);
 	private static int maxCharsInValueToString = 80;
+	private static boolean humanDateInToString = true;
+	private static final String DIGEST_ALGHORITM = "SHA-256";
+
+	private static MessageDigest digest;
+
+	static {
+		try {
+			digest = MessageDigest.getInstance(DIGEST_ALGHORITM);
+		} catch (final NoSuchAlgorithmException e) {
+			LOGGER.error("");
+		}
+	}
 
 	public static int getMaxCharsInValueToString() {
 		return maxCharsInValueToString;
+	}
+
+	public static boolean isHumanDateInToString() {
+		return humanDateInToString;
+	}
+
+	public static void setHumanDateInToString(final boolean humanDateInToString) {
+		Fact.humanDateInToString = humanDateInToString;
 	}
 
 	public static void setMaxCharsInValueToString(final int maxCharsInValueToString) {
@@ -46,6 +74,7 @@ public class Fact<T> {
 
 	private final String name;
 	private final T value;
+	private final long createdAt;
 
 	/**
 	 * Create a new fact.
@@ -58,6 +87,7 @@ public class Fact<T> {
 		Objects.requireNonNull(value, "value must not be null");
 		this.name = name;
 		this.value = value;
+		this.createdAt = Instant.now().toEpochMilli();
 	}
 
 	@Override
@@ -71,6 +101,16 @@ public class Fact<T> {
 		final Fact<?> fact = (Fact<?>) o;
 		return name.equals(fact.name);
 	}
+
+	public long getCreatedAt() {
+		return createdAt;
+	}
+
+	/*
+	 * The Facts API represents a namespace for facts where each fact has a unique
+	 * name. Hence, equals/hashcode are deliberately calculated only on the fact
+	 * name.
+	 */
 
 	/**
 	 * Get the fact name.
@@ -90,12 +130,6 @@ public class Fact<T> {
 		return value;
 	}
 
-	/*
-	 * The Facts API represents a namespace for facts where each fact has a unique
-	 * name. Hence, equals/hashcode are deliberately calculated only on the fact
-	 * name.
-	 */
-
 	@Override
 	public int hashCode() {
 		return Objects.hash(name);
@@ -108,9 +142,12 @@ public class Fact<T> {
 			if (value.toString().length() <= maxCharsInValueToString) {
 				valueString = value.toString();
 			} else {
-				valueString = value.toString().substring(0, maxCharsInValueToString) + "[...]";
+				valueString = value.toString().substring(0, maxCharsInValueToString) + "["
+						+ new String(digest.digest(value.toString().getBytes(StandardCharsets.UTF_8))) + "]";
 			}
 		}
-		return "Fact{" + "name='" + name + '\'' + ", value=" + valueString + '}';
+		return "Fact{time="
+				+ (humanDateInToString ? Instant.ofEpochMilli(createdAt).toString() : String.valueOf(createdAt))
+				+ ", name='" + name + '\'' + ", value=" + valueString + '}';
 	}
 }

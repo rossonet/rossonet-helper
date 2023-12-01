@@ -23,6 +23,7 @@ public abstract class AbstractBaseRulesEngine implements BaseRulesEngine {
 
 	public static final String CTX = "ctx";
 	public static final String MEM = "mem";
+	private static final String MAT = "mat";
 	private final Set<FactProvider> factsProviders = Collections.synchronizedSet(new HashSet<>());
 	private final Set<RuleProvider> rulesProviders = Collections.synchronizedSet(new HashSet<>());
 	private RulesEngine rulesEngine;
@@ -35,19 +36,19 @@ public abstract class AbstractBaseRulesEngine implements BaseRulesEngine {
 		this(new MVELRuleFactory(new JsonRuleDefinitionReader()));
 	}
 
-	public AbstractBaseRulesEngine(AbstractRuleFactory ruleFactory) {
+	public AbstractBaseRulesEngine(final AbstractRuleFactory ruleFactory) {
 		this.ruleFactory = ruleFactory;
 		resetAndInitialize();
 		status = RulesEngineStatus.ACTIVE;
 	}
 
 	@Override
-	public void addFactProvider(FactProvider factProvider) {
+	public void addFactProvider(final FactProvider factProvider) {
 		factsProviders.add(factProvider);
 	}
 
 	@Override
-	public void addRulesProvider(RuleProvider ruleProvider) {
+	public void addRulesProvider(final RuleProvider ruleProvider) {
 		this.rulesProviders.add(ruleProvider);
 	}
 
@@ -62,7 +63,7 @@ public abstract class AbstractBaseRulesEngine implements BaseRulesEngine {
 		rulesProviders.clear();
 	}
 
-	private Rules createRules(JSONArray rules) throws Exception {
+	private Rules createRules(final JSONArray rules) throws Exception {
 		final Rules outputRules = ruleFactory.createRules(new StringReader(rules.toString()));
 		if (outputRules != null) {
 			logger.debug(TextHelper.ANSI_GREEN + "found " + outputRules.size() + " rules" + TextHelper.ANSI_RESET);
@@ -91,6 +92,8 @@ public abstract class AbstractBaseRulesEngine implements BaseRulesEngine {
 		try {
 			final Rules activeRules = createRules(rules);
 			facts.add(new Fact<>(CTX, new RulesContext(commandQueue, facts)));
+			// TODO: verificare
+			facts.add(new Fact<>(MAT, Math.class));
 			rulesEngine.fire(activeRules, facts);
 		} catch (final Exception e) {
 			logger.error(
@@ -119,7 +122,7 @@ public abstract class AbstractBaseRulesEngine implements BaseRulesEngine {
 	}
 
 	@Override
-	public void resetAndInitialize(RulesEngine rulesEngine) {
+	public void resetAndInitialize(final RulesEngine rulesEngine) {
 		status = RulesEngineStatus.INIT;
 		clearFacts();
 		clearRules();
@@ -128,7 +131,7 @@ public abstract class AbstractBaseRulesEngine implements BaseRulesEngine {
 	}
 
 	@Override
-	public void setCachedMemory(CachedMemory cachedMemory) {
+	public void setCachedMemory(final CachedMemory cachedMemory) {
 		if (factsProviders.contains(this.cachedMemory)) {
 			factsProviders.remove(cachedMemory);
 		}
