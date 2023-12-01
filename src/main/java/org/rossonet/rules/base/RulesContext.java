@@ -7,6 +7,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
+import java.util.concurrent.ThreadLocalRandom;
 
 import org.rossonet.ext.rules.api.Fact;
 import org.rossonet.ext.rules.api.Facts;
@@ -39,6 +40,14 @@ public class RulesContext {
 
 	public <T extends Object> void addFact(final String factName, final T payload) {
 		facts.add(new Fact<T>(factName, payload));
+	}
+
+	public String epochMilliToText(final long epoch) {
+		return Instant.ofEpochMilli(epoch).toString();
+	}
+
+	public String epochSecondToText(final long epoch) {
+		return Instant.ofEpochSecond(epoch).toString();
 	}
 
 	public void error(final String msg) {
@@ -138,6 +147,10 @@ public class RulesContext {
 			first = false;
 		}
 		return result.toString();
+	}
+
+	public int randomNumber(final int minValue, final int maxValue) {
+		return ThreadLocalRandom.current().nextInt(minValue, maxValue + 1);
 	}
 
 	public void removeFact(final String factName) {
