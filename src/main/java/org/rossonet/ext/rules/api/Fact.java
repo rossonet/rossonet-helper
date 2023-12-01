@@ -27,6 +27,7 @@ import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.time.Instant;
+import java.util.Base64;
 import java.util.Objects;
 
 import org.slf4j.Logger;
@@ -139,11 +140,14 @@ public class Fact<T> {
 	public String toString() {
 		String valueString = "";
 		if (value != null) {
-			if (value.toString().length() <= maxCharsInValueToString) {
+			final String valueCache = value.toString();
+			if (valueCache.length() <= maxCharsInValueToString) {
 				valueString = value.toString();
 			} else {
-				valueString = value.toString().substring(0, maxCharsInValueToString) + "["
-						+ new String(digest.digest(value.toString().getBytes(StandardCharsets.UTF_8))) + "]";
+				valueString = valueCache.substring(0, maxCharsInValueToString) + "[" + valueCache.length() + "::"
+						+ Base64.getEncoder()
+								.encodeToString(digest.digest(value.toString().getBytes(StandardCharsets.UTF_8)))
+						+ "]";
 			}
 		}
 		return "Fact{time="

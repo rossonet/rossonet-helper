@@ -11,7 +11,7 @@ buildscript {
 
 description = "Rossonet's static methods"
 group = 'net.rossonet.commons'
-version = '0.4.13'
+version = '0.4.14'
 
 ext {
 	sourceCompatibility = 1.8

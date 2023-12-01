@@ -4,12 +4,16 @@ import java.io.StringReader;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.concurrent.ThreadLocalRandom;
 
 import org.json.JSONArray;
 import org.rossonet.ext.rules.api.Fact;
 import org.rossonet.ext.rules.api.Facts;
+import org.rossonet.ext.rules.api.Rule;
+import org.rossonet.ext.rules.api.RuleListener;
 import org.rossonet.ext.rules.api.Rules;
 import org.rossonet.ext.rules.api.RulesEngine;
+import org.rossonet.ext.rules.api.RulesEngineListener;
 import org.rossonet.ext.rules.core.DefaultRulesEngine;
 import org.rossonet.ext.rules.mvel.MVELRuleFactory;
 import org.rossonet.ext.rules.support.AbstractRuleFactory;
@@ -24,6 +28,7 @@ public abstract class AbstractBaseRulesEngine implements BaseRulesEngine {
 	public static final String CTX = "ctx";
 	public static final String MEM = "mem";
 	private static final String MAT = "mat";
+	private static final String RANDOM = "rand";
 	private final Set<FactProvider> factsProviders = Collections.synchronizedSet(new HashSet<>());
 	private final Set<RuleProvider> rulesProviders = Collections.synchronizedSet(new HashSet<>());
 	private RulesEngine rulesEngine;
@@ -31,6 +36,55 @@ public abstract class AbstractBaseRulesEngine implements BaseRulesEngine {
 	private RulesEngineStatus status = RulesEngineStatus.INIT;
 	private CachedMemory cachedMemory;
 	private final AbstractRuleFactory ruleFactory;
+	private final RuleListener ruleListener = new RuleListener() {
+
+		@Override
+		public void afterEvaluate(final Rule rule, final Facts facts, final boolean evaluationResult) {
+			// TODO: preparare il debug on demand
+			RuleListener.super.afterEvaluate(rule, facts, evaluationResult);
+		}
+
+		@Override
+		public boolean beforeEvaluate(final Rule rule, final Facts facts) {
+			// TODO: preparare il debug on demand
+			// se false, la regola non viene eseguita
+			return true;
+		}
+
+		@Override
+		public void beforeExecute(final Rule rule, final Facts facts) {
+			// TODO: preparare il debug on demand
+		}
+
+		@Override
+		public void onEvaluationError(final Rule rule, final Facts facts, final Exception exception) {
+			// TODO: preparare il debug on demand
+		}
+
+		@Override
+		public void onFailure(final Rule rule, final Facts facts, final Exception exception) {
+			// TODO: preparare il debug on demand
+		}
+
+		@Override
+		public void onSuccess(final Rule rule, final Facts facts) {
+			// TODO: preparare il debug on demand
+		}
+
+	};
+	private final RulesEngineListener rulesEngineListener = new RulesEngineListener() {
+
+		@Override
+		public void afterExecute(final Rules rules, final Facts facts) {
+			// TODO: preparare il debug on demand
+		}
+
+		@Override
+		public void beforeEvaluate(final Rules rules, final Facts facts) {
+			// TODO: preparare il debug on demand
+		}
+
+	};
 
 	public AbstractBaseRulesEngine() {
 		this(new MVELRuleFactory(new JsonRuleDefinitionReader()));
@@ -92,8 +146,10 @@ public abstract class AbstractBaseRulesEngine implements BaseRulesEngine {
 		try {
 			final Rules activeRules = createRules(rules);
 			facts.add(new Fact<>(CTX, new RulesContext(commandQueue, facts)));
-			// TODO: verificare
 			facts.add(new Fact<>(MAT, Math.class));
+			facts.add(new Fact<>(RANDOM, ThreadLocalRandom.current()));
+			rulesEngine.getRuleListeners().add(ruleListener);
+			rulesEngine.getRulesEngineListeners().add(rulesEngineListener);
 			rulesEngine.fire(activeRules, facts);
 		} catch (final Exception e) {
 			logger.error(
