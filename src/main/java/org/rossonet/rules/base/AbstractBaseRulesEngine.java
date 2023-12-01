@@ -148,8 +148,6 @@ public abstract class AbstractBaseRulesEngine implements BaseRulesEngine {
 			facts.add(new Fact<>(CTX, new RulesContext(commandQueue, facts)));
 			facts.add(new Fact<>(MAT, Math.class));
 			facts.add(new Fact<>(RANDOM, ThreadLocalRandom.current()));
-			rulesEngine.getRuleListeners().add(ruleListener);
-			rulesEngine.getRulesEngineListeners().add(rulesEngineListener);
 			rulesEngine.fire(activeRules, facts);
 		} catch (final Exception e) {
 			logger.error(
