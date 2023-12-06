@@ -40,12 +40,14 @@ public class Facts implements Iterable<Fact<?>> {
 
 	private final Set<Fact<?>> facts = new HashSet<>();
 
+	private boolean traceEnable;
+
 	/**
 	 * Add a fact, replacing any fact with the same name.
 	 * 
 	 * @param fact to add, must not be null
 	 */
-	public <T> void add(Fact<T> fact) {
+	public <T> void add(final Fact<T> fact) {
 		Objects.requireNonNull(fact, "fact must not be null");
 		final Fact<?> retrievedFact = getFact(fact.getName());
 		if (retrievedFact != null) {
@@ -85,7 +87,7 @@ public class Facts implements Iterable<Fact<?>> {
 	 *         fact with the given name
 	 */
 	@SuppressWarnings("unchecked")
-	public <T> T get(String factName) {
+	public <T> T get(final String factName) {
 		Objects.requireNonNull(factName, "fact name must not be null");
 		final Fact<?> fact = getFact(factName);
 		if (fact != null) {
@@ -101,9 +103,13 @@ public class Facts implements Iterable<Fact<?>> {
 	 * @return the fact having the given name, or null if there is no fact with the
 	 *         given name
 	 */
-	public Fact<?> getFact(String factName) {
+	public Fact<?> getFact(final String factName) {
 		Objects.requireNonNull(factName, "fact name must not be null");
 		return facts.stream().filter(fact -> fact.getName().equals(factName)).findFirst().orElse(null);
+	}
+
+	public boolean isTraceEnable() {
+		return traceEnable;
 	}
 
 	/**
@@ -124,7 +130,7 @@ public class Facts implements Iterable<Fact<?>> {
 	 * @param name  of the fact to add, must not be null
 	 * @param value of the fact to add, must not be null
 	 */
-	public <T> void put(String name, T value) {
+	public <T> void put(final String name, final T value) {
 		Objects.requireNonNull(name, "fact name must not be null");
 		Objects.requireNonNull(value, "fact value must not be null");
 		final Fact<?> retrievedFact = getFact(name);
@@ -139,7 +145,7 @@ public class Facts implements Iterable<Fact<?>> {
 	 *
 	 * @param fact to remove, must not be null
 	 */
-	public <T> void remove(Fact<T> fact) {
+	public <T> void remove(final Fact<T> fact) {
 		Objects.requireNonNull(fact, "fact must not be null");
 		facts.remove(fact);
 	}
@@ -149,12 +155,16 @@ public class Facts implements Iterable<Fact<?>> {
 	 *
 	 * @param factName name of the fact to remove, must not be null
 	 */
-	public void remove(String factName) {
+	public void remove(final String factName) {
 		Objects.requireNonNull(factName, "fact name must not be null");
 		final Fact<?> fact = getFact(factName);
 		if (fact != null) {
 			remove(fact);
 		}
+	}
+
+	public void setTraceEnable(final boolean traceEnable) {
+		this.traceEnable = traceEnable;
 	}
 
 	@Override
