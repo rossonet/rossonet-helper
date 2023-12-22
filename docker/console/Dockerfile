@@ -19,7 +19,8 @@ RUN  echo "deb https://download.sublimetext.com/ apt/stable/" |  tee /etc/apt/so
     && chown 1000:1000 $HOME/Desktop/sublime_text.desktop
 RUN  apt-get update \
     && DEBIAN_FRONTEND=noninteractive apt-get install -y openssh-client nmap tcpdump wireshark iproute2 iputils-arping iputils-ping traceroute firefox \
-    apt-utils libcanberra-gtk3-module curl wget git vim openjdk-11-jdk openjdk-17-jdk filezilla putty evince thunar-archive-plugin netcat iperf iperf3 corkscrew
+    apt-utils libcanberra-gtk3-module curl wget git vim openjdk-11-jdk openjdk-17-jdk filezilla putty evince thunar-archive-plugin netcat \
+    iperf iperf3 corkscrew ostinato
 RUN apt-get clean && rm -rf /tmp/* && rm -rf /var/lib/apt/lists/*
 
 WORKDIR /opt
