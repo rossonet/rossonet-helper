@@ -103,7 +103,7 @@ public class RulesContext {
 
 	public boolean isCachedMemoryPresent() {
 		if (facts.asMap().containsKey(AbstractBaseRulesEngine.MEM)
-				&& facts.asMap().get(AbstractBaseRulesEngine.MEM).getClass().equals(CachedMemory.class)) {
+				&& facts.asMap().get(AbstractBaseRulesEngine.MEM).getClass().equals(BaseCachedMemory.class)) {
 			return true;
 		} else {
 			return false;

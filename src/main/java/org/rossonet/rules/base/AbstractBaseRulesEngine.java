@@ -34,7 +34,7 @@ public abstract class AbstractBaseRulesEngine implements BaseRulesEngine {
 	private RulesEngine rulesEngine;
 	private final Logger logger = LoggerFactory.getLogger(AbstractBaseRulesEngine.class);
 	private RulesEngineStatus status = RulesEngineStatus.INIT;
-	private CachedMemory cachedMemory;
+	private BaseCachedMemory cachedMemory;
 	private final AbstractRuleFactory ruleFactory;
 	private final RuleListener ruleListener = new RuleListener() {
 
@@ -157,7 +157,7 @@ public abstract class AbstractBaseRulesEngine implements BaseRulesEngine {
 	}
 
 	@Override
-	public CachedMemory getCachedMemory() {
+	public BaseCachedMemory getCachedMemory() {
 		return cachedMemory;
 	}
 
@@ -185,7 +185,7 @@ public abstract class AbstractBaseRulesEngine implements BaseRulesEngine {
 	}
 
 	@Override
-	public void setCachedMemory(final CachedMemory cachedMemory) {
+	public void setCachedMemory(final BaseCachedMemory cachedMemory) {
 		if (factsProviders.contains(this.cachedMemory)) {
 			factsProviders.remove(cachedMemory);
 		}

@@ -18,7 +18,7 @@ public interface BaseRulesEngine {
 
 	public CommandQueue fireRules();
 
-	CachedMemory getCachedMemory();
+	BaseCachedMemory getCachedMemory();
 
 	public RulesEngineStatus getStatus();
 
@@ -26,6 +26,6 @@ public interface BaseRulesEngine {
 
 	void resetAndInitialize(RulesEngine ruleEngine);
 
-	void setCachedMemory(CachedMemory cachedMemory);
+	void setCachedMemory(BaseCachedMemory cachedMemory);
 
 }
