@@ -22,9 +22,9 @@ public abstract class AbstractTelemetryStorage implements TelemetryStorage {
 	}
 
 	@Override
-	public void exportDtmlSchema() {
+	public JSONObject exportDtmlSchema() {
 		// TODO Auto-generated method stub
-
+		return null;
 	}
 
 	@Override

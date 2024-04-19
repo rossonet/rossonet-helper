@@ -11,7 +11,7 @@ buildscript {
 
 description = "Rossonet's static methods"
 group = 'net.rossonet.commons'
-version = '0.5.1'
+version = '0.5.2'
 
 ext {
 	sourceCompatibility = 1.8
@@ -69,6 +69,8 @@ dependencies {
   // telemetry
   implementation group: 'org.apache.jena', name: 'apache-jena-libs', version: '4.10.0', ext: 'pom'
   implementation group: 'org.apache.jena', name: 'jena-core', version: '4.10.0'
+  // ICE ( stun turn )
+  implementation group: 'org.jitsi', name: 'ice4j', version: '3.0-68-gd289f12'
   // test
   testImplementation 'org.junit.jupiter:junit-jupiter-api:5.10.1'
   testImplementation group: 'com.ginsberg', name: 'junit5-system-exit', version: '1.1.2'

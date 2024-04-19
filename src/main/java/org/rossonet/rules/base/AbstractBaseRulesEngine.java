@@ -34,7 +34,7 @@ public abstract class AbstractBaseRulesEngine implements BaseRulesEngine {
 	private RulesEngine rulesEngine;
 	private final Logger logger = LoggerFactory.getLogger(AbstractBaseRulesEngine.class);
 	private RulesEngineStatus status = RulesEngineStatus.INIT;
-	private BaseCachedMemory cachedMemory;
+	private CachedMemory cachedMemory;
 	private final AbstractRuleFactory ruleFactory;
 	private final RuleListener ruleListener = new RuleListener() {
 
@@ -122,7 +122,7 @@ public abstract class AbstractBaseRulesEngine implements BaseRulesEngine {
 		if (outputRules != null) {
 			logger.debug(TextHelper.ANSI_GREEN + "found " + outputRules.size() + " rules" + TextHelper.ANSI_RESET);
 		} else {
-			logger.warn(TextHelper.ANSI_RED + "NO RULES found" + TextHelper.ANSI_RESET);
+			logger.debug(TextHelper.ANSI_RED + "NO RULES found" + TextHelper.ANSI_RESET);
 		}
 		return outputRules;
 	}
@@ -157,7 +157,7 @@ public abstract class AbstractBaseRulesEngine implements BaseRulesEngine {
 	}
 
 	@Override
-	public BaseCachedMemory getCachedMemory() {
+	public CachedMemory getCachedMemory() {
 		return cachedMemory;
 	}
 
@@ -185,7 +185,7 @@ public abstract class AbstractBaseRulesEngine implements BaseRulesEngine {
 	}
 
 	@Override
-	public void setCachedMemory(final BaseCachedMemory cachedMemory) {
+	public void setCachedMemory(final CachedMemory cachedMemory) {
 		if (factsProviders.contains(this.cachedMemory)) {
 			factsProviders.remove(cachedMemory);
 		}

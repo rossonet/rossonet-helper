@@ -4,7 +4,7 @@ import org.json.JSONObject;
 
 public interface DtdlSchema {
 
-	public void exportDtmlSchema();
+	public JSONObject exportDtmlSchema();
 
 	public void importDtmlSchema(JSONObject rootSchema);
 

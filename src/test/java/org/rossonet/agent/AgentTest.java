@@ -1,9 +1,12 @@
 package org.rossonet.agent;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import org.rossonet.rpc.RpcCommand;
 import org.rossonet.rpc.RpcEngine;
 import org.rossonet.rpc.jline3.Jline3RpcEngine;
 import org.rossonet.rules.base.AbstractBaseRulesEngine;
-import org.rossonet.rules.base.BaseCachedMemory;
 import org.rossonet.rules.base.FactProvider;
 import org.rossonet.sshd.BaseSshServer;
 import org.rossonet.sshd.MinaSshServer;
@@ -11,6 +14,12 @@ import org.rossonet.sshd.SshServerStatus.State;
 import org.rossonet.telemetry.TelemetryStorage;
 
 public class AgentTest extends AbstractBaseRulesEngine {
+
+	private final static List<RpcCommand> commandRegistry = new ArrayList<>();
+
+	public static void addCommandToRegistry(final RpcCommand command) {
+		commandRegistry.add(command);
+	}
 
 	public static void main(final String[] args) {
 		Thread.currentThread().setName("agent");
@@ -50,13 +59,16 @@ public class AgentTest extends AbstractBaseRulesEngine {
 		this.telemetry = telemetry;
 		this.rpcEngine = rpcEngine;
 		this.sshServer = sshServer;
-		setCachedMemory((BaseCachedMemory) telemetry);
-		addCommandToRpcEngine();
+		setCachedMemory(telemetry);
+		addCommandsToRpcEngine();
 		addFactProvider((FactProvider) rpcEngine);
 	}
 
-	private void addCommandToRpcEngine() {
+	private void addCommandsToRpcEngine() {
 		rpcEngine.getCommands().add(new TestRpcCommand());
+		for (final RpcCommand c : commandRegistry) {
+			rpcEngine.getCommands().add(c);
+		}
 	}
 
 }
