@@ -43,6 +43,8 @@ import org.rossonet.ext.rules.core.RuleProxy;
  */
 public class Rules implements Iterable<Rule> {
 
+	private boolean traceEnable;
+
 	private Set<Rule> rules = new TreeSet<>();
 
 	/**
@@ -50,7 +52,7 @@ public class Rules implements Iterable<Rule> {
 	 *
 	 * @param rules to register
 	 */
-	public Rules(Object... rules) {
+	public Rules(final Object... rules) {
 		this.register(rules);
 	}
 
@@ -59,7 +61,7 @@ public class Rules implements Iterable<Rule> {
 	 *
 	 * @param rules to register
 	 */
-	public Rules(Rule... rules) {
+	public Rules(final Rule... rules) {
 		Collections.addAll(this.rules, rules);
 	}
 
@@ -68,7 +70,7 @@ public class Rules implements Iterable<Rule> {
 	 *
 	 * @param rules to register
 	 */
-	public Rules(Set<Rule> rules) {
+	public Rules(final Set<Rule> rules) {
 		this.rules = new TreeSet<>(rules);
 	}
 
@@ -79,7 +81,7 @@ public class Rules implements Iterable<Rule> {
 		rules.clear();
 	}
 
-	private Rule findRuleByName(String ruleName) {
+	private Rule findRuleByName(final String ruleName) {
 		return rules.stream().filter(rule -> rule.getName().equalsIgnoreCase(ruleName)).findFirst().orElse(null);
 	}
 
@@ -90,6 +92,10 @@ public class Rules implements Iterable<Rule> {
 	 */
 	public boolean isEmpty() {
 		return rules.isEmpty();
+	}
+
+	public boolean isTraceEnable() {
+		return traceEnable;
 	}
 
 	/**
@@ -108,12 +114,16 @@ public class Rules implements Iterable<Rule> {
 	 *
 	 * @param rules to register, must not be null
 	 */
-	public void register(Object... rules) {
+	public void register(final Object... rules) {
 		Objects.requireNonNull(rules);
 		for (final Object rule : rules) {
 			Objects.requireNonNull(rule);
 			this.rules.add(RuleProxy.asRule(rule));
 		}
+	}
+
+	public void setTraceEnable(final boolean traceEnable) {
+		this.traceEnable = traceEnable;
 	}
 
 	/**
@@ -130,7 +140,7 @@ public class Rules implements Iterable<Rule> {
 	 *
 	 * @param rules to unregister, must not be null
 	 */
-	public void unregister(Object... rules) {
+	public void unregister(final Object... rules) {
 		Objects.requireNonNull(rules);
 		for (final Object rule : rules) {
 			Objects.requireNonNull(rule);

@@ -92,4 +92,8 @@ public interface Rule extends Comparable<Rule> {
 		return DEFAULT_PRIORITY;
 	}
 
+	default boolean isTraceEnable() {
+		return false;
+	}
+
 }
