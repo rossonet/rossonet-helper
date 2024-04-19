@@ -122,7 +122,7 @@ public abstract class AbstractBaseRulesEngine implements BaseRulesEngine {
 		if (outputRules != null) {
 			logger.debug(TextHelper.ANSI_GREEN + "found " + outputRules.size() + " rules" + TextHelper.ANSI_RESET);
 		} else {
-			logger.warn(TextHelper.ANSI_RED + "NO RULES found" + TextHelper.ANSI_RESET);
+			logger.debug(TextHelper.ANSI_RED + "NO RULES found" + TextHelper.ANSI_RESET);
 		}
 		return outputRules;
 	}
