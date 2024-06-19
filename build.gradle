@@ -58,7 +58,7 @@ dependencies {
   implementation 'org.jline:jline:3.3.1'
   implementation 'org.apache.sshd:sshd-scp:2.12.0'
   implementation 'org.apache.sshd:sshd-core:2.12.0'
-  implementation 'org.apache.sshd:sshd-sftp:2.12.0'
+  implementation 'org.apache.sshd:sshd-sftp:2.13.0'
   implementation 'org.apache.sshd:sshd-common:2.12.0'
   // Opc UA Milo https://github.com/eclipse/milo
   //implementation group: 'org.eclipse.milo', name: 'sdk-client', version: '0.6.12'
