@@ -5,7 +5,7 @@ buildscript {
   }
   dependencies {
     classpath "com.gorylenko.gradle-git-properties:gradle-git-properties:2.4.1"
-    classpath 'de.undercouch:gradle-download-task:5.5.0'
+    classpath 'de.undercouch:gradle-download-task:5.6.0'
   }
 }
 
@@ -58,7 +58,7 @@ dependencies {
   implementation 'org.jline:jline:3.3.1'
   implementation 'org.apache.sshd:sshd-scp:2.12.0'
   implementation 'org.apache.sshd:sshd-core:2.12.0'
-  implementation 'org.apache.sshd:sshd-sftp:2.12.0'
+  implementation 'org.apache.sshd:sshd-sftp:2.13.1'
   implementation 'org.apache.sshd:sshd-common:2.12.0'
   // Opc UA Milo https://github.com/eclipse/milo
   //implementation group: 'org.eclipse.milo', name: 'sdk-client', version: '0.6.12'
@@ -74,9 +74,9 @@ dependencies {
   // test
   testImplementation 'org.junit.jupiter:junit-jupiter-api:5.10.1'
   testImplementation group: 'com.ginsberg', name: 'junit5-system-exit', version: '1.1.2'
-  testImplementation group: 'org.assertj', name: 'assertj-core', version: '3.24.2'
+  testImplementation group: 'org.assertj', name: 'assertj-core', version: '3.26.3'
   testImplementation group: 'org.mockito', name: 'mockito-core', version: '5.10.0'
-  testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.10.1'
+  testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.10.3'
 }
 
 task eclipseClosedDependencies {}
