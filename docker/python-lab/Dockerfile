@@ -15,15 +15,13 @@ RUN conda install -y -c conda-forge bokeh
 RUN conda install -y -c anaconda paramiko
 RUN conda install -y -c conda-forge pyqt
 RUN conda install -y -c conda-forge qtconsole
-#RUN conda install -y -c conda-forge streamlit
-#RUN conda install -y -c anaconda nltk
 RUN conda install -y -c conda-forge diffusers
 RUN conda install -y -c huggingface transformers
 RUN conda install -y -c conda-forge gradio
 RUN conda install -y -c conda-forge openai
 RUN conda install -y -c conda-forge ibm-watson
 RUN conda install -y -c conda-forge librosa
-RUN conda install -y -c conda-forge::langchain 
+RUN conda install -y -c conda-forge langchain 
 RUN pip install git+https://github.com/openai/whisper.git
 RUN conda update ffmpeg
 USER root
