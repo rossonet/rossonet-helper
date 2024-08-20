@@ -46,7 +46,7 @@ import oshi.util.Util;
  * @Author Andrea Ambrosini - Rossonet s.c.a.r.l.
  *
  */
-public class SytemInfoHelper {
+public class SystemInfoHelper {
 
 	public static String getSystemInfo() {
 		final List<String> oshi = new ArrayList<>();
@@ -376,7 +376,7 @@ public class SytemInfoHelper {
 		return oshi;
 	}
 
-	private SytemInfoHelper() {
+	private SystemInfoHelper() {
 		throw new UnsupportedOperationException("Just for static usage");
 	}
 }
