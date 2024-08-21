@@ -1,4 +1,4 @@
-FROM jupyter/base-notebook:ubuntu-22.04 as initial
+FROM quay.io/jupyter/base-notebook:ubuntu-22.04 as initial
 USER root
 RUN apt update 
 RUN DEBIAN_FRONTEND=noninteractive apt install apt-transport-https ca-certificates curl gnupg lsb-release curl wget git vim -y
@@ -6,7 +6,6 @@ RUN DEBIAN_FRONTEND=noninteractive apt-get upgrade -y && apt-get clean && rm -rf
 USER jovyan
 RUN conda install -y -c pytorch pytorch cpuonly
 RUN conda install -y -c conda-forge torchinfo
-#RUN conda install -y -c plotly plotly
 RUN conda install -y -c conda-forge grpcio grpcio-tools
 #RUN conda install -y -c conda-forge matplotlib
 ##RUN conda install -y -c conda-forge seaborn
@@ -28,7 +27,7 @@ USER root
 COPY examples /home/jovyan/examples
 RUN chown -R jovyan /home/jovyan && chmod -R g+rw /home/jovyan
 
-FROM jupyter/base-notebook:ubuntu-22.04
+FROM quay.io/jupyter/base-notebook:ubuntu-22.04
 USER jovyan
 ENV JUPYTER_ENABLE_LAB=yes
 COPY --from=initial / /
