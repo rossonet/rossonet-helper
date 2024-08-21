@@ -49,7 +49,7 @@ dependencies {
   implementation group: 'org.apache.commons', name: 'commons-jexl3', version: '3.3'
   implementation group: 'org.mvel', name: 'mvel2', version: '2.5.1.Final'
   // docker client
-  implementation group: 'com.github.docker-java', name: 'docker-java', version: '3.3.4'
+  implementation group: 'com.github.docker-java', name: 'docker-java', version: '3.4.0'
   // OS and hardware diagnostic
   implementation group: 'com.github.oshi', name: 'oshi-core', version: '6.6.3'
   // cluster
