@@ -37,8 +37,8 @@ dependencies {
   api group: 'org.json', name: 'json', version: '20231013'
   api group: 'org.yaml', name: 'snakeyaml', version: '2.2'
   api group: 'dnsjava', name: 'dnsjava', version: '3.5.3'
-  api group: 'com.fasterxml.jackson.dataformat', name: 'jackson-dataformat-yaml', version: '2.16.0'
-  api group: 'com.fasterxml.jackson.core', name: 'jackson-databind', version: '2.15.3'
+  api group: 'com.fasterxml.jackson.dataformat', name: 'jackson-dataformat-yaml', version: '2.16.1'
+  api group: 'com.fasterxml.jackson.core', name: 'jackson-databind', version: '2.16.1'
   api group: 'com.google.guava', name: 'guava', version: '32.1.3-jre'
   api group: 'io.github.classgraph', name: 'classgraph', version: '4.8.165'
   // crittografia
@@ -51,7 +51,7 @@ dependencies {
   // docker client
   implementation group: 'com.github.docker-java', name: 'docker-java', version: '3.3.4'
   // OS and hardware diagnostic
-  implementation group: 'com.github.oshi', name: 'oshi-core', version: '6.4.8'
+  implementation group: 'com.github.oshi', name: 'oshi-core', version: '6.4.12'
   // cluster
   implementation group: 'org.jgroups', name: 'jgroups', version: '5.3.0.Final'
   // console
@@ -75,7 +75,7 @@ dependencies {
   testImplementation 'org.junit.jupiter:junit-jupiter-api:5.10.1'
   testImplementation group: 'com.ginsberg', name: 'junit5-system-exit', version: '1.1.2'
   testImplementation group: 'org.assertj', name: 'assertj-core', version: '3.24.2'
-  testImplementation group: 'org.mockito', name: 'mockito-core', version: '5.7.0'
+  testImplementation group: 'org.mockito', name: 'mockito-core', version: '5.10.0'
   testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.10.1'
 }
 
