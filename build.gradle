@@ -33,7 +33,7 @@ apply plugin: 'signing'
 apply plugin: 'maven-publish'
 
 dependencies {
-  api group: 'org.slf4j', name: 'slf4j-api', version: '2.0.9'
+  api group: 'org.slf4j', name: 'slf4j-api', version: '2.0.16'
   api group: 'org.json', name: 'json', version: '20231013'
   api group: 'org.yaml', name: 'snakeyaml', version: '2.2'
   api group: 'dnsjava', name: 'dnsjava', version: '3.6.1'
