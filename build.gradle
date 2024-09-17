@@ -40,24 +40,24 @@ dependencies {
   api group: 'com.fasterxml.jackson.dataformat', name: 'jackson-dataformat-yaml', version: '2.16.1'
   api group: 'com.fasterxml.jackson.core', name: 'jackson-databind', version: '2.16.1'
   api group: 'com.google.guava', name: 'guava', version: '32.1.3-jre'
-  api group: 'io.github.classgraph', name: 'classgraph', version: '4.8.165'
+  api group: 'io.github.classgraph', name: 'classgraph', version: '4.8.175'
   // crittografia
   implementation group: 'org.bouncycastle', name: 'bcprov-jdk18on', version: '1.77'
   implementation group: 'org.bouncycastle', name: 'bcpkix-jdk18on', version: '1.77'
   implementation group: 'org.bouncycastle', name: 'bcutil-jdk18on', version: '1.77'
   // rules
-  implementation group: 'org.apache.commons', name: 'commons-jexl3', version: '3.3'
+  implementation group: 'org.apache.commons', name: 'commons-jexl3', version: '3.4.0'
   implementation group: 'org.mvel', name: 'mvel2', version: '2.5.1.Final'
   // docker client
-  implementation group: 'com.github.docker-java', name: 'docker-java', version: '3.3.4'
+  implementation group: 'com.github.docker-java', name: 'docker-java', version: '3.4.0'
   // OS and hardware diagnostic
   implementation group: 'com.github.oshi', name: 'oshi-core', version: '6.6.3'
   // cluster
   implementation group: 'org.jgroups', name: 'jgroups', version: '5.3.0.Final'
   // console
-  implementation 'org.jline:jline:3.3.1'
+  implementation 'org.jline:jline:3.26.3'
   implementation 'org.apache.sshd:sshd-scp:2.13.1'
-  implementation 'org.apache.sshd:sshd-core:2.13.1'
+  implementation 'org.apache.sshd:sshd-core:2.13.2'
   implementation 'org.apache.sshd:sshd-sftp:2.13.2'
   implementation 'org.apache.sshd:sshd-common:2.13.1'
   // Opc UA Milo https://github.com/eclipse/milo
