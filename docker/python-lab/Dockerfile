@@ -4,7 +4,7 @@ RUN apt update
 RUN DEBIAN_FRONTEND=noninteractive apt install apt-transport-https ca-certificates curl gnupg lsb-release curl wget git vim -y
 RUN DEBIAN_FRONTEND=noninteractive apt-get upgrade -y && apt-get clean && rm -rf /var/lib/apt/lists/*
 USER jovyan
-RUN conda install -y -c conda-forge grpcio grpcio-tools
+RUN conda install -y -c conda-forge grpcio grpcio-tools jupyterlab-git
 USER root
 RUN mkdir /home/jovyan/examples
 COPY examples /home/jovyan/examples/rossonet
