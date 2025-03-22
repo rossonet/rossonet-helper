@@ -452,9 +452,9 @@ public class CommandLine {
 	@Deprecated
 	public static abstract class AbstractHandler<R, T extends AbstractHandler<R, T>> {
 		private Help.ColorScheme colorScheme = Help.defaultColorScheme(Help.Ansi.AUTO);
+		private PrintStream err = System.err;
 		private Integer exitCode;
 		private PrintStream out = System.out;
-		private PrintStream err = System.err;
 
 		/**
 		 * Indicates that the handler should call {@link System#exit(int)} after
@@ -2301,7 +2301,7 @@ public class CommandLine {
 	 * codes. See the javadoc of the {@link #execute(String...) execute} method for
 	 * details.
 	 * </p>
-	 * <h3>Standard Exit Codes</h3>
+	 * Standard Exit Codes
 	 * <p>
 	 * There are a few conventions, but there is <a href=
 	 * "https://stackoverflow.com/questions/1101957/are-there-any-standard-exit-status-codes-in-linux/40484670#40484670">no
@@ -2321,7 +2321,7 @@ public class CommandLine {
 	 * <li><a href="http://www.hiteksoftware.com/knowledge/articles/049.htm">Windows
 	 * exit codes</a></li>
 	 * </ul>
-	 * <h3>Valid Ranges</h3>
+	 * Valid Ranges
 	 * <p>
 	 * Note that *nix shells may restrict exit codes to the 0-255 range, DOS seems
 	 * to allow larger numbers. See this <a href=
@@ -2393,7 +2393,7 @@ public class CommandLine {
 	 * Finally, the Help class contains inner classes and interfaces that can be
 	 * used to create custom help messages.
 	 * </p>
-	 * <h3>IOptionRenderer and IParameterRenderer</h3>
+	 * IOptionRenderer and IParameterRenderer
 	 * <p>
 	 * Renders a field annotated with {@link Option} or {@link Parameters} to an
 	 * array of {@link Text} values. By default, these values are
@@ -2410,21 +2410,21 @@ public class CommandLine {
 	 * <p>
 	 * Other components rely on this ordering.
 	 * </p>
-	 * <h3>Layout</h3>
+	 * Layout
 	 * <p>
 	 * Delegates to the renderers to create {@link Text} values for the annotated
 	 * fields, and uses a {@link TextTable} to display these values in tabular
 	 * format. Layout is responsible for deciding which values to display where in
 	 * the table. By default, Layout shows one option or parameter per table row.
 	 * </p>
-	 * <h3>TextTable</h3>
+	 * TextTable
 	 * <p>
 	 * Responsible for spacing out {@link Text} values according to the
 	 * {@link Column} definitions the table was created with. Columns have a width,
 	 * indentation, and an overflow policy that decides what to do if a value is
 	 * longer than the column's width.
 	 * </p>
-	 * <h3>Text</h3>
+	 * Text
 	 * <p>
 	 * Encapsulates rich text with styles and colors in a way that other components
 	 * like {@link TextTable} are unaware of the embedded ANSI escape codes.
@@ -2443,10 +2443,10 @@ public class CommandLine {
 			 * (case insensitive).
 			 */
 			AUTO,
-			/** Forced ON: always emit ANSI escape code regardless of the platform. */
-			ON,
 			/** Forced OFF: never emit ANSI escape code regardless of the platform. */
-			OFF;
+			OFF,
+			/** Forced ON: always emit ANSI escape code regardless of the platform. */
+			ON;
 
 			/** Defines the interface for an ANSI escape sequence. */
 			public interface IStyle {
@@ -2474,8 +2474,8 @@ public class CommandLine {
 			 * + 6 * g + b (0 &lt;= r, g, b &lt;= 5).
 			 */
 			static class Palette256Color implements IStyle {
-				private final int fgbg;
 				private final int color;
+				private final int fgbg;
 
 				Palette256Color(boolean foreground, String color) {
 					this.fgbg = foreground ? 38 : 48;
@@ -2523,11 +2523,11 @@ public class CommandLine {
 			 * escape codes.
 			 */
 			public enum Style implements IStyle {
-				reset(0, 0), bold(1, 21), faint(2, 22), italic(3, 23), underline(4, 24), blink(5, 25), reverse(7, 27),
-				fg_black(30, 39), fg_red(31, 39), fg_green(32, 39), fg_yellow(33, 39), fg_blue(34, 39),
-				fg_magenta(35, 39), fg_cyan(36, 39), fg_white(37, 39), bg_black(40, 49), bg_red(41, 49),
-				bg_green(42, 49), bg_yellow(43, 49), bg_blue(44, 49), bg_magenta(45, 49), bg_cyan(46, 49),
-				bg_white(47, 49),;
+				bg_black(40, 49), bg_blue(44, 49), bg_cyan(46, 49), bg_green(42, 49), bg_magenta(45, 49),
+				bg_red(41, 49), bg_white(47, 49), bg_yellow(43, 49), blink(5, 25), bold(1, 21), faint(2, 22),
+				fg_black(30, 39), fg_blue(34, 39), fg_cyan(36, 39), fg_green(32, 39), fg_magenta(35, 39),
+				fg_red(31, 39), fg_white(37, 39), fg_yellow(33, 39), italic(3, 23), reset(0, 0), reverse(7, 27),
+				underline(4, 24),;
 
 				/**
 				 * Parses the specified style markup and returns the associated style. The
@@ -2634,8 +2634,8 @@ public class CommandLine {
 					return styles;
 				}
 
-				private final int startCode;
 				private final int endCode;
+				private final int startCode;
 
 				Style(int startCode, int endCode) {
 					this.startCode = startCode;
@@ -2681,12 +2681,12 @@ public class CommandLine {
 			 * </p>
 			 */
 			public class Text implements Cloneable {
-				private final int maxLength;
+				private ColorScheme colorScheme;
 				private int from;
 				private int length;
+				private final int maxLength;
 				private StringBuilder plain = new StringBuilder();
 				private List<StyledSection> sections = new ArrayList<StyledSection>();
-				private ColorScheme colorScheme;
 
 				/**
 				 * Constructs a Text with the specified max length (for use in a TextTable
@@ -3044,12 +3044,12 @@ public class CommandLine {
 			}
 
 			static Text EMPTY_TEXT = OFF.new Text(0);
-			static Boolean tty;
 			/**
 			 * Caches the result of method {@link #isJansiConsoleInstalled()} so it doesn't
 			 * repeatedly call Class#forName, which can cause performance issues.
 			 */
 			static Boolean jansiInstalled;
+			static Boolean tty;
 
 			static boolean ansiPossible() {
 				if (forceDisabled()) {
@@ -3296,14 +3296,14 @@ public class CommandLine {
 			 * @since 4.0
 			 */
 			public static class Builder {
+				private Ansi ansi = Ansi.AUTO;
 				private final List<IStyle> commandStyles = new ArrayList<IStyle>();
+				private final List<IStyle> errorStyles = new ArrayList<IStyle>();
+				private Map<String, IStyle> markupMap;
+				private final List<IStyle> optionParamStyles = new ArrayList<IStyle>();
 				private final List<IStyle> optionStyles = new ArrayList<IStyle>();
 				private final List<IStyle> parameterStyles = new ArrayList<IStyle>();
-				private final List<IStyle> optionParamStyles = new ArrayList<IStyle>();
-				private final List<IStyle> errorStyles = new ArrayList<IStyle>();
 				private final List<IStyle> stackTraceStyles = new ArrayList<IStyle>();
-				private Ansi ansi = Ansi.AUTO;
-				private Map<String, IStyle> markupMap;
 
 				/** Constructs an empty color scheme builder with Ansi.AUTO. */
 				public Builder() {
@@ -3553,15 +3553,15 @@ public class CommandLine {
 					return "";
 				}
 			};
+			private final Ansi ansi;
 			private final List<IStyle> commandStyles;
+			private final List<IStyle> errorStyles;
+			private final Map<String, IStyle> markupMap;
+			private final List<IStyle> optionParamStyles;
 			private final List<IStyle> optionStyles;
 			private final List<IStyle> parameterStyles;
-			private final List<IStyle> optionParamStyles;
-			private final List<IStyle> errorStyles;
-			private final List<IStyle> stackTraceStyles;
-			private final Ansi ansi;
 
-			private final Map<String, IStyle> markupMap;
+			private final List<IStyle> stackTraceStyles;
 
 			/**
 			 * Constructs a new empty ColorScheme with the specified Ansi enabled mode.
@@ -3914,11 +3914,8 @@ public class CommandLine {
 			 * fit.
 			 */
 			public enum Overflow {
-				TRUNCATE, SPAN, WRAP
+				SPAN, TRUNCATE, WRAP
 			}
-
-			/** Column width in characters */
-			public final int width;
 
 			/**
 			 * Indent (number of empty spaces at the start of the column preceding the text
@@ -3928,6 +3925,9 @@ public class CommandLine {
 
 			/** Policy that determines how to handle values larger than the column width. */
 			public final Overflow overflow;
+
+			/** Column width in characters */
+			public final int width;
 
 			public Column(int width, int indent, Overflow overflow) {
 				this.width = width;
@@ -3973,8 +3973,8 @@ public class CommandLine {
 		 */
 		static class DefaultOptionRenderer implements IOptionRenderer {
 			private final String requiredMarker;
-			private final boolean showDefaultValues;
 			private String sep;
+			private final boolean showDefaultValues;
 
 			public DefaultOptionRenderer(boolean showDefaultValues, String requiredMarker) {
 				this.showDefaultValues = showDefaultValues;
@@ -4301,9 +4301,9 @@ public class CommandLine {
 		 */
 		public static class Layout {
 			protected final ColorScheme colorScheme;
-			protected final TextTable table;
 			protected IOptionRenderer optionRenderer;
 			protected IParameterRenderer parameterRenderer;
+			protected final TextTable table;
 
 			/**
 			 * Constructs a Layout with the specified color scheme, a new default TextTable,
@@ -4674,9 +4674,9 @@ public class CommandLine {
 				int columnCount;
 			}
 
-			private static final int OPTION_SEPARATOR_COLUMN = 2;
-
 			private static final int LONG_OPTION_COLUMN = 3;
+
+			private static final int OPTION_SEPARATOR_COLUMN = 2;
 
 			/**
 			 * Constructs a {@code TextTable} with the specified columns.
@@ -4819,18 +4819,18 @@ public class CommandLine {
 						new Column(descriptionWidth, 1, WRAP)); // " Creates a ..."
 			}
 
+			private boolean adjustLineBreaksForWideCJKCharacters = true;
+
+			private final ColorScheme colorScheme;
 			/** The column definitions of this table. */
 			private final Column[] columns;
-
 			/**
 			 * The {@code char[]} slots of the {@code TextTable} to copy text values into.
 			 */
 			protected final List<Text> columnValues = new ArrayList<Text>();
 			/** By default, indent wrapped lines by 2 spaces. */
 			public int indentWrappedLines = 2;
-			private final ColorScheme colorScheme;
 			private final int tableWidth;
-			private boolean adjustLineBreaksForWideCJKCharacters = true;
 
 			/**
 			 * @deprecated use
@@ -5438,22 +5438,22 @@ public class CommandLine {
 					: result;
 		}
 
+		private List<String> aliases;
+
+		private final Map<String, Help> allCommands = new LinkedHashMap<String, Help>();
+
 		public final PositionalParamSpec AT_FILE_POSITIONAL_PARAM = PositionalParamSpec.builder()
 				.paramLabel("${picocli.atfile.label:-@<filename>}")
 				.description("${picocli.atfile.description:-One or more argument files containing options.}")
 				.arity("0..*").descriptionKey("picocli.atfile").build();
+		private final ColorScheme colorScheme;
+		private final CommandSpec commandSpec;
 
 		public final OptionSpec END_OF_OPTIONS_OPTION = createEndOfOptionsOption(
 				ParserSpec.DEFAULT_END_OF_OPTIONS_DELIMITER);
 
-		private final CommandSpec commandSpec;
-		private final ColorScheme colorScheme;
-		private final Map<String, Help> allCommands = new LinkedHashMap<String, Help>();
-
-		private final Map<String, Help> visibleCommands = new LinkedHashMap<String, Help>();
-
-		private List<String> aliases;
 		private final IParamLabelRenderer parameterLabelRenderer;
+		private final Map<String, Help> visibleCommands = new LinkedHashMap<String, Help>();
 
 		/**
 		 * Constructs a new {@code Help} instance with the specified color scheme,
@@ -6912,20 +6912,20 @@ public class CommandLine {
 			"If a COMMAND is specified, the help for that command is shown.%n" })
 	public static final class HelpCommand implements IHelpCommandInitializable, IHelpCommandInitializable2, Runnable {
 
-		@Option(names = { "-h",
-				"--help" }, usageHelp = true, descriptionKey = "helpCommand.help", description = "Show usage help for the help command and exit.")
-		private boolean helpRequested;
+		private Help.Ansi ansi; // for backwards compatibility with pre-4.0
+
+		private Help.ColorScheme colorScheme;
 
 		@Parameters(paramLabel = "COMMAND", arity = "0..1", descriptionKey = "helpCommand.command", description = "The COMMAND to display the usage help message for.")
 		private String commands;
-
-		private CommandLine self;
-		private PrintStream out;
 		private PrintStream err;
-		private PrintWriter outWriter;
 		private PrintWriter errWriter;
-		private Help.Ansi ansi; // for backwards compatibility with pre-4.0
-		private Help.ColorScheme colorScheme;
+		@Option(names = { "-h",
+				"--help" }, usageHelp = true, descriptionKey = "helpCommand.help", description = "Show usage help for the help command and exit.")
+		private boolean helpRequested;
+		private PrintStream out;
+		private PrintWriter outWriter;
+		private CommandLine self;
 
 		/** {@inheritDoc} */
 		@Override
@@ -7601,11 +7601,11 @@ public class CommandLine {
 		/** Value displayed in trace logs for options with echo=false. */
 		private static final String MASKED_VALUE = "*****(masked)"; // see #2087
 		private final Map<Class<?>, ITypeConverter<?>> converterRegistry = new HashMap<Class<?>, ITypeConverter<?>>();
-		private boolean isHelpRequested;
-		private int position;
-		private int interactiveCount;
 		private boolean endOfOptions;
+		private int interactiveCount;
+		private boolean isHelpRequested;
 		private ParseResult.Builder parseResultBuilder;
+		private int position;
 
 		Interpreter() {
 			registerBuiltInConverters();
@@ -10163,7 +10163,7 @@ public class CommandLine {
 	}
 
 	private enum LookBehind {
-		SEPARATE, ATTACHED, ATTACHED_WITH_SEPARATOR;
+		ATTACHED, ATTACHED_WITH_SEPARATOR, SEPARATE;
 
 		static LookBehind parse(String separator) {
 			if ("".equals(separator)) {
@@ -10315,23 +10315,23 @@ public class CommandLine {
 			 * @since 4.0
 			 */
 			public static class Builder {
+				private final List<ArgSpec> args = new ArrayList<ArgSpec>();
+				private final List<Builder> compositesReferencingMe = new ArrayList<Builder>();
+				private boolean exclusive = true;
 				private IGetter getter;
-				private ISetter setter;
-				private IScope scope;
-				private ITypeInfo typeInfo;
 				private String heading;
 				private String headingKey;
-				private boolean exclusive = true;
 				private Range multiplicity = Range.valueOf("0..1");
-				private boolean validate = true;
 				private int order = DEFAULT_ORDER;
-				private final List<ArgSpec> args = new ArrayList<ArgSpec>();
-				private final List<ArgGroupSpec> subgroups = new ArrayList<ArgGroupSpec>();
+				private IScope scope;
+				private ISetter setter;
 				private final List<IAnnotatedElement> specElements = new ArrayList<IAnnotatedElement>();
-
+				private final List<ArgGroupSpec> subgroups = new ArrayList<ArgGroupSpec>();
 				// for topological sorting; private only
 				private Boolean topologicalSortDone;
-				private final List<Builder> compositesReferencingMe = new ArrayList<Builder>();
+
+				private ITypeInfo typeInfo;
+				private boolean validate = true;
 
 				Builder() {
 				}
@@ -10680,26 +10680,26 @@ public class CommandLine {
 				return s == null ? "null" : "'" + s + "'";
 			}
 
+			private final Set<ArgSpec> args;
+			private final boolean exclusive;
+			private final IGetter getter;
 			private final String heading;
 			private final String headingKey;
-			private final boolean exclusive;
-			private final Range multiplicity;
-			private final boolean validate;
-			private final int order;
-			private final IGetter getter;
-			private final ISetter setter;
-			private final IScope scope;
-			private final ITypeInfo typeInfo;
-			private final List<ArgGroupSpec> subgroups;
-			private final Set<ArgSpec> args;
-
-			private Messages messages;
-
-			private ArgGroupSpec parentGroup;
-
 			private String id = "1";
+			private Messages messages;
+			private final Range multiplicity;
+			private final int order;
+			private ArgGroupSpec parentGroup;
+			private final IScope scope;
+			private final ISetter setter;
 
 			private final List<IAnnotatedElement> specElements;
+
+			private final List<ArgGroupSpec> subgroups;
+
+			private final ITypeInfo typeInfo;
+
+			private final boolean validate;
 
 			ArgGroupSpec(ArgGroupSpec.Builder builder) {
 				heading = NO_HEADING.equals(builder.heading) ? null : builder.heading;
@@ -11392,44 +11392,44 @@ public class CommandLine {
 					return "<" + name + ">";
 				}
 
-				private Object userObject;
+				private IAnnotatedElement annotatedElement;
 				private Range arity;
-				private String[] description;
-				private String descriptionKey;
-				private boolean required;
-				private boolean originallyRequired;
-				private boolean interactive;
-				private boolean echo;
-				private String prompt;
-				private String paramLabel;
-				private boolean hideParamSyntax;
-				private String splitRegex;
-				private String splitRegexSynopsisLabel;
-				private boolean hidden;
-				private ArgSpec root;
-				private boolean inherited;
-				private Class<?> type;
 				private Class<?>[] auxiliaryTypes;
-				private ITypeInfo typeInfo;
+				private Iterable<String> completionCandidates;
 				private ITypeConverter<?>[] converters;
 				private String defaultValue;
-				private Object initialValue;
-				private boolean hasInitialValue = true;
-				private InitialValueState initialValueState = InitialValueState.UNAVAILABLE;
-				private Help.Visibility showDefaultValue;
-				private Iterable<String> completionCandidates;
-				private IParameterConsumer parameterConsumer;
-				private IParameterPreprocessor preprocessor;
-				private String toString;
+				private String[] description;
+				private String descriptionKey;
+				private boolean echo;
 				private IGetter getter = new ObjectBinding();
-				private ISetter setter = (ISetter) getter;
-				private IScope scope = new ObjectScope(null);
-				private ScopeType scopeType = ScopeType.LOCAL;
-				private IAnnotatedElement annotatedElement;
+				private boolean hasInitialValue = true;
+				private boolean hidden;
+				private boolean hideParamSyntax;
+				private boolean inherited;
+				private Object initialValue;
+				private InitialValueState initialValueState = InitialValueState.UNAVAILABLE;
+				private boolean interactive;
 				private String mapFallbackValue = UNSPECIFIED;
 				private String originalDefaultValue = UNSPECIFIED;
-
+				private boolean originallyRequired;
 				private String originalMapFallbackValue = UNSPECIFIED;
+				private IParameterConsumer parameterConsumer;
+				private String paramLabel;
+				private IParameterPreprocessor preprocessor;
+				private String prompt;
+				private boolean required;
+				private ArgSpec root;
+				private IScope scope = new ObjectScope(null);
+				private ScopeType scopeType = ScopeType.LOCAL;
+				private ISetter setter = (ISetter) getter;
+				private Help.Visibility showDefaultValue;
+				private String splitRegex;
+				private String splitRegexSynopsisLabel;
+				private String toString;
+				private Class<?> type;
+				private ITypeInfo typeInfo;
+
+				private Object userObject;
 
 				Builder() {
 				}
@@ -12271,6 +12271,11 @@ public class CommandLine {
 				}
 			}
 
+			static final String DESCRIPTION_VARIABLE_COMPLETION_CANDIDATES = "${COMPLETION-CANDIDATES}";
+			static final String DESCRIPTION_VARIABLE_DEFAULT_VALUE = "${DEFAULT-VALUE}";
+			static final String DESCRIPTION_VARIABLE_FALLBACK_VALUE = "${FALLBACK-VALUE}";
+			static final String DESCRIPTION_VARIABLE_MAP_FALLBACK_VALUE = "${MAP-FALLBACK-VALUE}";
+			private static final String NO_DEFAULT_VALUE = "__no_default_value__";
 			/**
 			 * Special value that can be used to designate {@code null}.
 			 * 
@@ -12282,11 +12287,6 @@ public class CommandLine {
 			 * @since 4.6
 			 */
 			static final String NULL_VALUE = "_NULL_";
-			static final String DESCRIPTION_VARIABLE_DEFAULT_VALUE = "${DEFAULT-VALUE}";
-			static final String DESCRIPTION_VARIABLE_FALLBACK_VALUE = "${FALLBACK-VALUE}";
-			static final String DESCRIPTION_VARIABLE_MAP_FALLBACK_VALUE = "${MAP-FALLBACK-VALUE}";
-			static final String DESCRIPTION_VARIABLE_COMPLETION_CANDIDATES = "${COMPLETION-CANDIDATES}";
-			private static final String NO_DEFAULT_VALUE = "__no_default_value__";
 
 			private static final String UNSPECIFIED = "__unspecified__";
 
@@ -12441,57 +12441,57 @@ public class CommandLine {
 				return result;
 			}
 
-			private final boolean inherited;
-			private final ArgSpec root;
-			// help-related fields
-			private final boolean hidden;
-			private final String paramLabel;
+			protected final IAnnotatedElement annotatedElement;
+			private Range arity;
+			CommandSpec commandSpec;
+			private final Iterable<String> completionCandidates;
 
-			private final boolean hideParamSyntax;
+			private final ITypeConverter<?>[] converters;
+			private final String defaultValue;
 			private final String[] description;
 			private final String descriptionKey;
-			private final Help.Visibility showDefaultValue;
-			private Messages messages;
-			CommandSpec commandSpec;
+			private final boolean echo;
+			private final IGetter getter;
 			private ArgGroupSpec group;
-			private final Object userObject;
+			private final boolean hasInitialValue;
+			// help-related fields
+			private final boolean hidden;
+			private final boolean hideParamSyntax;
+			private final boolean inherited;
+			private Object initialValue;
+			private InitialValueState initialValueState;
+			private final boolean interactive;
+			private final String mapFallbackValue;
+			private Messages messages;
+			private final String originalDefaultValue;
+			private boolean originallyRequired;
+			private final String originalMapFallbackValue;
+			private List<String> originalStringValues = new ArrayList<String>();
+			private final IParameterConsumer parameterConsumer;
+			private final String paramLabel;
+			private final IParameterPreprocessor preprocessor;
+			private final String prompt;
 			// parser fields
 			private boolean required;
-			private boolean originallyRequired;
-			private final boolean interactive;
-			private final boolean echo;
-			private final String prompt;
-			private final String splitRegex;
-			private final String splitRegexSynopsisLabel;
-			protected final ITypeInfo typeInfo;
-			private final ITypeConverter<?>[] converters;
-			private final Iterable<String> completionCandidates;
-			private final IParameterConsumer parameterConsumer;
-			private final IParameterPreprocessor preprocessor;
-			private final String mapFallbackValue;
-			private final String defaultValue;
-			private final String originalDefaultValue;
-			private final String originalMapFallbackValue;
-			private Object initialValue;
-			private final boolean hasInitialValue;
-			private InitialValueState initialValueState;
-			protected boolean valueIsDefaultValue;
-			protected final IAnnotatedElement annotatedElement;
-			private final IGetter getter;
-			private final ISetter setter;
-
+			private final ArgSpec root;
 			private final IScope scope;
-
 			private final ScopeType scopeType;
+			private final ISetter setter;
+			private final Help.Visibility showDefaultValue;
+			private final String splitRegex;
 
-			private Range arity;
+			private final String splitRegexSynopsisLabel;
 
 			private List<String> stringValues = new ArrayList<String>();
-			private List<String> originalStringValues = new ArrayList<String>();
+
 			protected String toString;
-			private final List<Object> typedValues = new ArrayList<Object>();
 
 			Map<Integer, Object> typedValueAtPosition = new TreeMap<Integer, Object>();
+			private final List<Object> typedValues = new ArrayList<Object>();
+			protected final ITypeInfo typeInfo;
+			private final Object userObject;
+
+			protected boolean valueIsDefaultValue;
 
 			/** Constructs a new {@code ArgSpec}. */
 			private <T extends Builder<T>> ArgSpec(Builder<T> builder) {
@@ -13420,12 +13420,12 @@ public class CommandLine {
 				return clazz == String.class || clazz == Character.class;
 			}
 
-			private final LinkedHashMap<K, V> targetMap = new LinkedHashMap<K, V>();
+			private boolean caseInsensitive = false;
 			private final HashMap<K, K> keyMap = new HashMap<K, K>();
 			private final Set<K> keySet = new CaseAwareKeySet();
-			private boolean caseInsensitive = false;
-
 			private final Locale locale;
+
+			private final LinkedHashMap<K, V> targetMap = new LinkedHashMap<K, V>();
 
 			/**
 			 * Constructs an empty {@code CaseAwareLinkedMap} instance with
@@ -14041,10 +14041,10 @@ public class CommandLine {
 			public static final String DEFAULT_COMMAND_NAME = "<main class>";
 
 			/**
-			 * Constant Boolean holding the default setting for whether this is a help
-			 * command: <code>{@value}</code>.
+			 * Constant Boolean holding the default setting for whether variables should be
+			 * interpolated in String values: <code>{@value}</code>.
 			 */
-			static final Boolean DEFAULT_IS_HELP_COMMAND = false;
+			static final Boolean DEFAULT_INTERPOLATE_VARIABLES = true;
 
 			/**
 			 * Constant Boolean holding the default setting for whether method commands
@@ -14053,10 +14053,10 @@ public class CommandLine {
 			static final Boolean DEFAULT_IS_ADD_METHOD_SUBCOMMANDS = true;
 
 			/**
-			 * Constant Boolean holding the default setting for whether variables should be
-			 * interpolated in String values: <code>{@value}</code>.
+			 * Constant Boolean holding the default setting for whether this is a help
+			 * command: <code>{@value}</code>.
 			 */
-			static final Boolean DEFAULT_INTERPOLATE_VARIABLES = true;
+			static final Boolean DEFAULT_IS_HELP_COMMAND = false;
 
 			static final Boolean DEFAULT_SUBCOMMANDS_REPEATABLE = false;
 
@@ -14218,63 +14218,63 @@ public class CommandLine {
 				return new CommandSpec(CommandUserObject.create(userObject, factory));
 			}
 
-			private final CaseAwareLinkedMap<String, CommandLine> commands = new CaseAwareLinkedMap<String, CommandLine>();
-			private final CaseAwareLinkedMap<String, OptionSpec> optionsByNameMap = new CaseAwareLinkedMap<String, OptionSpec>();
-			private final CaseAwareLinkedMap<String, OptionSpec> negatedOptionsByNameMap = new CaseAwareLinkedMap<String, OptionSpec>();
-			private final CaseAwareLinkedMap<Character, OptionSpec> posixOptionsByKeyMap = new CaseAwareLinkedMap<Character, OptionSpec>();
-			private final Map<String, CommandSpec> mixins = new LinkedHashMap<String, CommandSpec>();
-			private final Map<String, IAnnotatedElement> mixinAnnotatedElements = new LinkedHashMap<String, IAnnotatedElement>();
-
-			private final List<ArgSpec> requiredArgs = new ArrayList<ArgSpec>();
-			private final List<ArgSpec> args = new ArrayList<ArgSpec>();
-			private final List<OptionSpec> options = new ArrayList<OptionSpec>();
-			private final List<PositionalParamSpec> positionalParameters = new ArrayList<PositionalParamSpec>();
-			private final List<UnmatchedArgsBinding> unmatchedArgs = new ArrayList<UnmatchedArgsBinding>();
-
-			private final List<IAnnotatedElement> specElements = new ArrayList<IAnnotatedElement>();
-			private final List<IAnnotatedElement> parentCommandElements = new ArrayList<IAnnotatedElement>();
-			private final List<ArgGroupSpec> groups = new ArrayList<ArgGroupSpec>();
-			private final ParserSpec parser = new ParserSpec();
-			private final Interpolator interpolator = new Interpolator(this);
-			private final UsageMessageSpec usageMessage = new UsageMessageSpec(interpolator);
-			private TypedMember[] methodParams;
-			private final CommandUserObject userObject;
-			private CommandLine commandLine;
-			private CommandSpec parent;
-			private Boolean isAddMethodSubcommands;
-
-			private Boolean interpolateVariables;
-			private String name;
 			private Set<String> aliases = new LinkedHashSet<String>();
-			private Boolean isHelpCommand;
-			private IVersionProvider versionProvider;
-
+			private final List<ArgSpec> args = new ArrayList<ArgSpec>();
+			private CommandLine commandLine;
+			private final CaseAwareLinkedMap<String, CommandLine> commands = new CaseAwareLinkedMap<String, CommandLine>();
 			private IDefaultValueProvider defaultValueProvider;
-			private INegatableOptionTransformer negatableOptionTransformer = RegexTransformer.createDefault();
+			private Integer exitCodeOnExecutionException;
 
-			private Boolean subcommandsRepeatable;
-
-			private String[] version;
-
-			private String toString;
+			private Integer exitCodeOnInvalidInput;
+			private Integer exitCodeOnSuccess;
+			private Integer exitCodeOnUsageHelp;
+			private Integer exitCodeOnVersionHelp;
+			private final List<ArgGroupSpec> groups = new ArrayList<ArgGroupSpec>();
 
 			private boolean inherited = false;
+			private Boolean interpolateVariables;
+			private final Interpolator interpolator = new Interpolator(this);
+			private Boolean isAddMethodSubcommands;
+			private Boolean isHelpCommand;
+			private TypedMember[] methodParams;
+			private final Map<String, IAnnotatedElement> mixinAnnotatedElements = new LinkedHashMap<String, IAnnotatedElement>();
+			private final Map<String, CommandSpec> mixins = new LinkedHashMap<String, CommandSpec>();
+			private IModelTransformer modelTransformer = null;
+			private String name;
+			private INegatableOptionTransformer negatableOptionTransformer = RegexTransformer.createDefault();
+
+			private final CaseAwareLinkedMap<String, OptionSpec> negatedOptionsByNameMap = new CaseAwareLinkedMap<String, OptionSpec>();
+			private final List<OptionSpec> options = new ArrayList<OptionSpec>();
+			private final CaseAwareLinkedMap<String, OptionSpec> optionsByNameMap = new CaseAwareLinkedMap<String, OptionSpec>();
+			private CommandSpec parent;
+			private final List<IAnnotatedElement> parentCommandElements = new ArrayList<IAnnotatedElement>();
+
+			private final ParserSpec parser = new ParserSpec();
+			private final List<PositionalParamSpec> positionalParameters = new ArrayList<PositionalParamSpec>();
+
+			private final CaseAwareLinkedMap<Character, OptionSpec> posixOptionsByKeyMap = new CaseAwareLinkedMap<Character, OptionSpec>();
+
+			private IParameterPreprocessor preprocessor = new NoOpParameterPreprocessor();
+
+			private final List<ArgSpec> requiredArgs = new ArrayList<ArgSpec>();
 
 			private ScopeType scopeType = null;
 
-			private Integer exitCodeOnSuccess;
+			private final List<IAnnotatedElement> specElements = new ArrayList<IAnnotatedElement>();
 
-			private Integer exitCodeOnUsageHelp;
+			private Boolean subcommandsRepeatable;
 
-			private Integer exitCodeOnVersionHelp;
+			private String toString;
 
-			private Integer exitCodeOnInvalidInput;
+			private final List<UnmatchedArgsBinding> unmatchedArgs = new ArrayList<UnmatchedArgsBinding>();
 
-			private Integer exitCodeOnExecutionException;
+			private final UsageMessageSpec usageMessage = new UsageMessageSpec(interpolator);
 
-			private IModelTransformer modelTransformer = null;
+			private final CommandUserObject userObject;
 
-			private IParameterPreprocessor preprocessor = new NoOpParameterPreprocessor();
+			private String[] version;
+
+			private IVersionProvider versionProvider;
 
 			private CommandSpec(CommandUserObject userObject) {
 				this.userObject = userObject;
@@ -16325,11 +16325,11 @@ public class CommandLine {
 				return new CommandUserObject(userObject, factory);
 			}
 
+			private CommandSpec commandSpec; // initialized in CommandSpec constructor
 			private final IFactory factory;
 			private Object instance;
-			private Class<?> type;
 
-			private CommandSpec commandSpec; // initialized in CommandSpec constructor
+			private Class<?> type;
 
 			private CommandUserObject(Object objectOrClass, IFactory factory) {
 				this.factory = Assert.notNull(factory, "factory");
@@ -16428,8 +16428,8 @@ public class CommandLine {
 		}
 
 		static class FieldBinding implements IGetter, ISetter, IScoped {
-			private final IScope scope;
 			private final Field field;
+			private final IScope scope;
 
 			FieldBinding(IScope scope, Field field) {
 				this.scope = scope;
@@ -17123,13 +17123,13 @@ public class CommandLine {
 				Messages.loadBundles = loadBundles;
 			}
 
-			private final CommandSpec spec;
 			private final String bundleBaseName;
+			private final Set<String> keys;
+			private Messages parent;
+
 			private final ResourceBundle rb;
 
-			private final Set<String> keys;
-
-			private Messages parent;
+			private final CommandSpec spec;
 
 			public Messages(CommandSpec spec, ResourceBundle rb) {
 				this(spec, extractName(rb), rb);
@@ -17266,10 +17266,10 @@ public class CommandLine {
 		}
 
 		static class MethodBinding implements IGetter, ISetter, IScoped {
-			private final IScope scope;
-			private final Method method;
-			private final CommandSpec spec;
 			private Object currentValue;
+			private final Method method;
+			private final IScope scope;
+			private final CommandSpec spec;
 
 			MethodBinding(IScope scope, Method method, CommandSpec spec) {
 				this.scope = scope;
@@ -17331,8 +17331,8 @@ public class CommandLine {
 		 */
 		public static class MethodParam extends AccessibleObject {
 			final Method method;
-			final int paramIndex;
 			final String name;
+			final int paramIndex;
 			int position;
 
 			public MethodParam(Method method, int paramIndex) {
@@ -17542,14 +17542,14 @@ public class CommandLine {
 			 * @since 3.0
 			 */
 			public static class Builder extends ArgSpec.Builder<Builder> {
-				private String[] names;
+				private String fallbackValue = DEFAULT_FALLBACK_VALUE;
 				private boolean help;
+				private String[] names;
+				private boolean negatable;
+				private int order = DEFAULT_ORDER;
+				private String originalFallbackValue = ArgSpec.UNSPECIFIED;
 				private boolean usageHelp;
 				private boolean versionHelp;
-				private boolean negatable;
-				private String fallbackValue = DEFAULT_FALLBACK_VALUE;
-				private String originalFallbackValue = ArgSpec.UNSPECIFIED;
-				private int order = DEFAULT_ORDER;
 
 				private Builder(IAnnotatedElement member, IFactory factory) {
 					super(member.getAnnotation(Option.class), member, factory);
@@ -17768,16 +17768,16 @@ public class CommandLine {
 				return new Builder(names);
 			}
 
-			private final String[] names;
+			private final String fallbackValue;
 			private final boolean help;
+			private final String[] names;
+
+			private final boolean negatable;
+			private final int order;
+			private final String originalFallbackValue;
 			private final boolean usageHelp;
 
 			private final boolean versionHelp;
-			private final boolean negatable;
-			private final String fallbackValue;
-			private final String originalFallbackValue;
-
-			private final int order;
 
 			/**
 			 * Ensures all attributes of this {@code OptionSpec} have a valid value; throws
@@ -17984,12 +17984,12 @@ public class CommandLine {
 		 */
 		public static class ParserSpec {
 
+			static final String DEFAULT_END_OF_OPTIONS_DELIMITER = "--";
 			/**
 			 * Constant String holding the default separator between options and option
 			 * parameters: <code>{@value}</code>.
 			 */
 			static final String DEFAULT_SEPARATOR = "=";
-			static final String DEFAULT_END_OF_OPTIONS_DELIMITER = "--";
 			private boolean abbreviatedOptionsAllowed = false;
 			private boolean abbreviatedSubcommandsAllowed = false;
 			private boolean allowOptionsAsOptionParameters = false;
@@ -18617,9 +18617,9 @@ public class CommandLine {
 				return new Builder(original);
 			}
 
-			private Range index;
-			private Range capacity;
 			private final Range builderCapacity;
+			private Range capacity;
+			private Range index;
 
 			/**
 			 * Ensures all attributes of this {@code PositionalParamSpec} have a valid
@@ -18848,10 +18848,10 @@ public class CommandLine {
 				return new Class<?>[] { propertyType }; // not a multi-value field
 			}
 
-			private final Class<?> type;
+			private final List<String> actualGenericTypeArguments;
 
 			private final Class<?>[] auxiliaryTypes;
-			private final List<String> actualGenericTypeArguments;
+			private final Class<?> type;
 
 			RuntimeTypeInfo(Class<?> type, Class<?>[] auxiliaryTypes, List<String> actualGenericTypeArguments) {
 				this.type = Assert.notNull(type, "type");
@@ -19003,12 +19003,12 @@ public class CommandLine {
 			}
 
 			final AccessibleObject accessible;
-			final String name;
-			final ITypeInfo typeInfo;
-			private final InitialValueState initialValueState;
-			private IScope scope;
 			private IGetter getter;
+			private final InitialValueState initialValueState;
+			final String name;
+			private IScope scope;
 			private ISetter setter;
+			final ITypeInfo typeInfo;
 
 			TypedMember(Field field) {
 				accessible = Assert.notNull(field, "field");
@@ -19326,9 +19326,9 @@ public class CommandLine {
 
 			private final IGetter getter;
 
-			private final ISetter setter;
-
 			private Object initialValue;
+
+			private final ISetter setter;
 
 			private UnmatchedArgsBinding(IGetter getter, ISetter setter) {
 				if (getter == null && setter == null) {
@@ -19483,210 +19483,16 @@ public class CommandLine {
 		public static class UsageMessageSpec {
 
 			/**
-			 * {@linkplain #sectionKeys() Section key} to {@linkplain #sectionMap() control}
-			 * the {@linkplain IHelpSectionRenderer section renderer} for the Header Heading
-			 * section. The default renderer for this section calls
-			 * {@link Help#headerHeading(Object...)}.
-			 * 
-			 * @since 3.9
+			 * Constant Boolean holding the default setting for whether to abbreviate the
+			 * synopsis: <code>{@value}</code>.
 			 */
-			public static final String SECTION_KEY_HEADER_HEADING = "headerHeading";
+			static final Boolean DEFAULT_ABBREVIATE_SYNOPSIS = Boolean.FALSE;
 
 			/**
-			 * {@linkplain #sectionKeys() Section key} to {@linkplain #sectionMap() control}
-			 * the {@linkplain IHelpSectionRenderer section renderer} for the Header
-			 * section. The default renderer for this section calls
-			 * {@link Help#header(Object...)}.
-			 * 
-			 * @since 3.9
+			 * Constant Boolean holding the default setting for whether line breaks should
+			 * take wide CJK characters into account: <code>{@value}</code>.
 			 */
-			public static final String SECTION_KEY_HEADER = "header";
-
-			/**
-			 * {@linkplain #sectionKeys() Section key} to {@linkplain #sectionMap() control}
-			 * the {@linkplain IHelpSectionRenderer section renderer} for the Synopsis
-			 * Heading section. The default renderer for this section calls
-			 * {@link Help#synopsisHeading(Object...)}.
-			 * 
-			 * @since 3.9
-			 */
-			public static final String SECTION_KEY_SYNOPSIS_HEADING = "synopsisHeading";
-
-			/**
-			 * {@linkplain #sectionKeys() Section key} to {@linkplain #sectionMap() control}
-			 * the {@linkplain IHelpSectionRenderer section renderer} for the Synopsis
-			 * section. The default renderer for this section calls
-			 * {@link Help#synopsis(int)}.
-			 * 
-			 * @since 3.9
-			 */
-			public static final String SECTION_KEY_SYNOPSIS = "synopsis";
-
-			/**
-			 * {@linkplain #sectionKeys() Section key} to {@linkplain #sectionMap() control}
-			 * the {@linkplain IHelpSectionRenderer section renderer} for the Description
-			 * Heading section. The default renderer for this section calls
-			 * {@link Help#descriptionHeading(Object...)}.
-			 * 
-			 * @since 3.9
-			 */
-			public static final String SECTION_KEY_DESCRIPTION_HEADING = "descriptionHeading";
-
-			/**
-			 * {@linkplain #sectionKeys() Section key} to {@linkplain #sectionMap() control}
-			 * the {@linkplain IHelpSectionRenderer section renderer} for the Description
-			 * section. The default renderer for this section calls
-			 * {@link Help#description(Object...)}.
-			 * 
-			 * @since 3.9
-			 */
-			public static final String SECTION_KEY_DESCRIPTION = "description";
-
-			/**
-			 * {@linkplain #sectionKeys() Section key} to {@linkplain #sectionMap() control}
-			 * the {@linkplain IHelpSectionRenderer section renderer} for the Parameter List
-			 * Heading section. The default renderer for this section calls
-			 * {@link Help#parameterListHeading(Object...)}.
-			 * 
-			 * @since 3.9
-			 */
-			public static final String SECTION_KEY_PARAMETER_LIST_HEADING = "parameterListHeading";
-
-			/**
-			 * {@linkplain #sectionKeys() Section key} to {@linkplain #sectionMap() control}
-			 * the {@linkplain IHelpSectionRenderer section renderer} for the @-file
-			 * parameter list section. The default renderer for this section calls
-			 * {@link Help#atFileParameterList()}.
-			 * 
-			 * @since 4.2
-			 */
-			public static final String SECTION_KEY_AT_FILE_PARAMETER = "atFileParameterList";
-
-			/**
-			 * {@linkplain #sectionKeys() Section key} to {@linkplain #sectionMap() control}
-			 * the {@linkplain IHelpSectionRenderer section renderer} for the Parameter List
-			 * section. The default renderer for this section calls
-			 * {@link Help#parameterList()}.
-			 * 
-			 * @since 3.9
-			 */
-			public static final String SECTION_KEY_PARAMETER_LIST = "parameterList";
-
-			/**
-			 * {@linkplain #sectionKeys() Section key} to {@linkplain #sectionMap() control}
-			 * the {@linkplain IHelpSectionRenderer section renderer} for the Option List
-			 * Heading section. The default renderer for this section calls
-			 * {@link Help#optionListHeading(Object...)}.
-			 * 
-			 * @since 3.9
-			 */
-			public static final String SECTION_KEY_OPTION_LIST_HEADING = "optionListHeading";
-
-			/**
-			 * {@linkplain #sectionKeys() Section key} to {@linkplain #sectionMap() control}
-			 * the {@linkplain IHelpSectionRenderer section renderer} for the Option List
-			 * section. The default renderer for this section calls
-			 * {@link Help#optionList()}.
-			 * 
-			 * @since 3.9
-			 */
-			public static final String SECTION_KEY_OPTION_LIST = "optionList";
-
-			/**
-			 * {@linkplain #sectionKeys() Section key} to {@linkplain #sectionMap() control}
-			 * the {@linkplain IHelpSectionRenderer section renderer} for the {@code --} End
-			 * of Options list section. The default renderer for this section calls
-			 * {@link Help#endOfOptionsList()}.
-			 * 
-			 * @since 4.3
-			 */
-			public static final String SECTION_KEY_END_OF_OPTIONS = "endOfOptionsList";
-
-			/**
-			 * {@linkplain #sectionKeys() Section key} to {@linkplain #sectionMap() control}
-			 * the {@linkplain IHelpSectionRenderer section renderer} for the Subcommand
-			 * List Heading section. The default renderer for this section calls
-			 * {@link Help#commandListHeading(Object...)}.
-			 * 
-			 * @since 3.9
-			 */
-			public static final String SECTION_KEY_COMMAND_LIST_HEADING = "commandListHeading";
-
-			/**
-			 * {@linkplain #sectionKeys() Section key} to {@linkplain #sectionMap() control}
-			 * the {@linkplain IHelpSectionRenderer section renderer} for the Subcommand
-			 * List section. The default renderer for this section calls
-			 * {@link Help#commandList()}.
-			 * 
-			 * @since 3.9
-			 */
-			public static final String SECTION_KEY_COMMAND_LIST = "commandList";
-
-			/**
-			 * {@linkplain #sectionKeys() Section key} to {@linkplain #sectionMap() control}
-			 * the {@linkplain IHelpSectionRenderer section renderer} for the Exit Code List
-			 * Heading section. The default renderer for this section calls
-			 * {@link Help#exitCodeListHeading(Object...)}.
-			 * 
-			 * @since 4.0
-			 */
-			public static final String SECTION_KEY_EXIT_CODE_LIST_HEADING = "exitCodeListHeading";
-
-			/**
-			 * {@linkplain #sectionKeys() Section key} to {@linkplain #sectionMap() control}
-			 * the {@linkplain IHelpSectionRenderer section renderer} for the Exit Code List
-			 * section. The default renderer for this section calls
-			 * {@link Help#exitCodeList()}.
-			 * 
-			 * @since 4.0
-			 */
-			public static final String SECTION_KEY_EXIT_CODE_LIST = "exitCodeList";
-
-			/**
-			 * {@linkplain #sectionKeys() Section key} to {@linkplain #sectionMap() control}
-			 * the {@linkplain IHelpSectionRenderer section renderer} for the Footer Heading
-			 * section. The default renderer for this section calls
-			 * {@link Help#footerHeading(Object...)}.
-			 * 
-			 * @since 3.9
-			 */
-			public static final String SECTION_KEY_FOOTER_HEADING = "footerHeading";
-
-			/**
-			 * {@linkplain #sectionKeys() Section key} to {@linkplain #sectionMap() control}
-			 * the {@linkplain IHelpSectionRenderer section renderer} for the Footer
-			 * section. The default renderer for this section calls
-			 * {@link Help#footer(Object...)}.
-			 * 
-			 * @since 3.9
-			 */
-			public static final String SECTION_KEY_FOOTER = "footer";
-
-			/** Constant holding the default usage message width: <code>{@value}</code>. */
-			public final static int DEFAULT_USAGE_WIDTH = 80;
-			private final static int MINIMUM_USAGE_WIDTH = 55;
-			final static int DEFAULT_USAGE_LONG_OPTIONS_WIDTH = 20;
-			private final static int DEFAULT_SYNOPSIS_INDENT = -1; // by default, fall back to aligning to the synopsis
-																	// heading
-			private final static double DEFAULT_SYNOPSIS_AUTO_INDENT_THRESHOLD = 0.5;
-			private final static double MAX_SYNOPSIS_AUTO_INDENT_THRESHOLD = 0.9;
-
-			/**
-			 * Constant Boolean holding the default setting for whether to attempt to adjust
-			 * the width to the terminal width: <code>{@value}</code>.
-			 */
-			static final Boolean DEFAULT_USAGE_AUTO_WIDTH = Boolean.FALSE;
-
-			/**
-			 * Constant String holding the default synopsis heading: <code>{@value}</code>.
-			 */
-			static final String DEFAULT_SYNOPSIS_HEADING = "Usage: ";
-
-			/**
-			 * Constant String holding the default synopsis subcommands:
-			 * <code>{@value}</code>.
-			 */
-			static final String DEFAULT_SYNOPSIS_SUBCOMMANDS = "[COMMAND]";
+			static final Boolean DEFAULT_ADJUST_CJK = Boolean.TRUE;
 
 			/**
 			 * Constant String holding the default command list heading:
@@ -19695,16 +19501,38 @@ public class CommandLine {
 			static final String DEFAULT_COMMAND_LIST_HEADING = "Commands:%n";
 
 			/**
+			 * Constant Boolean holding the default setting for whether this command should
+			 * be listed in the usage help of the parent command: <code>{@value}</code>.
+			 */
+			static final Boolean DEFAULT_HIDDEN = Boolean.FALSE;
+
+			static final String[] DEFAULT_MULTI_LINE = {};
+
+			/**
 			 * Constant String holding the default string that separates options from option
 			 * parameters: {@code ' '} ({@value}).
 			 */
 			static final char DEFAULT_REQUIRED_OPTION_MARKER = ' ';
 
 			/**
-			 * Constant Boolean holding the default setting for whether to abbreviate the
-			 * synopsis: <code>{@value}</code>.
+			 * Constant Boolean holding the default setting for whether to show an entry
+			 * for @-files in the usage help message.
 			 */
-			static final Boolean DEFAULT_ABBREVIATE_SYNOPSIS = Boolean.FALSE;
+			static final Boolean DEFAULT_SHOW_AT_FILE = Boolean.FALSE;
+
+			/**
+			 * Constant Boolean holding the default setting for whether to show default
+			 * values in the usage help message: <code>{@value}</code>.
+			 */
+			static final Boolean DEFAULT_SHOW_DEFAULT_VALUES = Boolean.FALSE;
+
+			/**
+			 * Constant Boolean holding the default setting for whether to show an entry for
+			 * the {@code --} End of Options delimiter in the usage help message.
+			 */
+			static final Boolean DEFAULT_SHOW_END_OF_OPTIONS = Boolean.FALSE;
+
+			static final String DEFAULT_SINGLE_VALUE = "";
 
 			/**
 			 * Constant Boolean holding the default setting for whether to sort the options
@@ -19718,38 +19546,210 @@ public class CommandLine {
 			 */
 			static final Boolean DEFAULT_SORT_SYNOPSIS = Boolean.TRUE;
 
-			/**
-			 * Constant Boolean holding the default setting for whether to show an entry
-			 * for @-files in the usage help message.
-			 */
-			static final Boolean DEFAULT_SHOW_AT_FILE = Boolean.FALSE;
+			// heading
+			private final static double DEFAULT_SYNOPSIS_AUTO_INDENT_THRESHOLD = 0.5;
 
 			/**
-			 * Constant Boolean holding the default setting for whether to show an entry for
-			 * the {@code --} End of Options delimiter in the usage help message.
+			 * Constant String holding the default synopsis heading: <code>{@value}</code>.
 			 */
-			static final Boolean DEFAULT_SHOW_END_OF_OPTIONS = Boolean.FALSE;
+			static final String DEFAULT_SYNOPSIS_HEADING = "Usage: ";
+
+			private final static int DEFAULT_SYNOPSIS_INDENT = -1; // by default, fall back to aligning to the synopsis
 
 			/**
-			 * Constant Boolean holding the default setting for whether to show default
-			 * values in the usage help message: <code>{@value}</code>.
+			 * Constant String holding the default synopsis subcommands:
+			 * <code>{@value}</code>.
 			 */
-			static final Boolean DEFAULT_SHOW_DEFAULT_VALUES = Boolean.FALSE;
+			static final String DEFAULT_SYNOPSIS_SUBCOMMANDS = "[COMMAND]";
 
 			/**
-			 * Constant Boolean holding the default setting for whether this command should
-			 * be listed in the usage help of the parent command: <code>{@value}</code>.
+			 * Constant Boolean holding the default setting for whether to attempt to adjust
+			 * the width to the terminal width: <code>{@value}</code>.
 			 */
-			static final Boolean DEFAULT_HIDDEN = Boolean.FALSE;
+			static final Boolean DEFAULT_USAGE_AUTO_WIDTH = Boolean.FALSE;
+
+			final static int DEFAULT_USAGE_LONG_OPTIONS_WIDTH = 20;
+
+			/** Constant holding the default usage message width: <code>{@value}</code>. */
+			public final static int DEFAULT_USAGE_WIDTH = 80;
+			private final static double MAX_SYNOPSIS_AUTO_INDENT_THRESHOLD = 0.9;
+			private final static int MINIMUM_USAGE_WIDTH = 55;
+			/**
+			 * {@linkplain #sectionKeys() Section key} to {@linkplain #sectionMap() control}
+			 * the {@linkplain IHelpSectionRenderer section renderer} for the @-file
+			 * parameter list section. The default renderer for this section calls
+			 * {@link Help#atFileParameterList()}.
+			 * 
+			 * @since 4.2
+			 */
+			public static final String SECTION_KEY_AT_FILE_PARAMETER = "atFileParameterList";
+			/**
+			 * {@linkplain #sectionKeys() Section key} to {@linkplain #sectionMap() control}
+			 * the {@linkplain IHelpSectionRenderer section renderer} for the Subcommand
+			 * List section. The default renderer for this section calls
+			 * {@link Help#commandList()}.
+			 * 
+			 * @since 3.9
+			 */
+			public static final String SECTION_KEY_COMMAND_LIST = "commandList";
+			/**
+			 * {@linkplain #sectionKeys() Section key} to {@linkplain #sectionMap() control}
+			 * the {@linkplain IHelpSectionRenderer section renderer} for the Subcommand
+			 * List Heading section. The default renderer for this section calls
+			 * {@link Help#commandListHeading(Object...)}.
+			 * 
+			 * @since 3.9
+			 */
+			public static final String SECTION_KEY_COMMAND_LIST_HEADING = "commandListHeading";
 
 			/**
-			 * Constant Boolean holding the default setting for whether line breaks should
-			 * take wide CJK characters into account: <code>{@value}</code>.
+			 * {@linkplain #sectionKeys() Section key} to {@linkplain #sectionMap() control}
+			 * the {@linkplain IHelpSectionRenderer section renderer} for the Description
+			 * section. The default renderer for this section calls
+			 * {@link Help#description(Object...)}.
+			 * 
+			 * @since 3.9
 			 */
-			static final Boolean DEFAULT_ADJUST_CJK = Boolean.TRUE;
+			public static final String SECTION_KEY_DESCRIPTION = "description";
 
-			static final String DEFAULT_SINGLE_VALUE = "";
-			static final String[] DEFAULT_MULTI_LINE = {};
+			/**
+			 * {@linkplain #sectionKeys() Section key} to {@linkplain #sectionMap() control}
+			 * the {@linkplain IHelpSectionRenderer section renderer} for the Description
+			 * Heading section. The default renderer for this section calls
+			 * {@link Help#descriptionHeading(Object...)}.
+			 * 
+			 * @since 3.9
+			 */
+			public static final String SECTION_KEY_DESCRIPTION_HEADING = "descriptionHeading";
+
+			/**
+			 * {@linkplain #sectionKeys() Section key} to {@linkplain #sectionMap() control}
+			 * the {@linkplain IHelpSectionRenderer section renderer} for the {@code --} End
+			 * of Options list section. The default renderer for this section calls
+			 * {@link Help#endOfOptionsList()}.
+			 * 
+			 * @since 4.3
+			 */
+			public static final String SECTION_KEY_END_OF_OPTIONS = "endOfOptionsList";
+
+			/**
+			 * {@linkplain #sectionKeys() Section key} to {@linkplain #sectionMap() control}
+			 * the {@linkplain IHelpSectionRenderer section renderer} for the Exit Code List
+			 * section. The default renderer for this section calls
+			 * {@link Help#exitCodeList()}.
+			 * 
+			 * @since 4.0
+			 */
+			public static final String SECTION_KEY_EXIT_CODE_LIST = "exitCodeList";
+
+			/**
+			 * {@linkplain #sectionKeys() Section key} to {@linkplain #sectionMap() control}
+			 * the {@linkplain IHelpSectionRenderer section renderer} for the Exit Code List
+			 * Heading section. The default renderer for this section calls
+			 * {@link Help#exitCodeListHeading(Object...)}.
+			 * 
+			 * @since 4.0
+			 */
+			public static final String SECTION_KEY_EXIT_CODE_LIST_HEADING = "exitCodeListHeading";
+
+			/**
+			 * {@linkplain #sectionKeys() Section key} to {@linkplain #sectionMap() control}
+			 * the {@linkplain IHelpSectionRenderer section renderer} for the Footer
+			 * section. The default renderer for this section calls
+			 * {@link Help#footer(Object...)}.
+			 * 
+			 * @since 3.9
+			 */
+			public static final String SECTION_KEY_FOOTER = "footer";
+
+			/**
+			 * {@linkplain #sectionKeys() Section key} to {@linkplain #sectionMap() control}
+			 * the {@linkplain IHelpSectionRenderer section renderer} for the Footer Heading
+			 * section. The default renderer for this section calls
+			 * {@link Help#footerHeading(Object...)}.
+			 * 
+			 * @since 3.9
+			 */
+			public static final String SECTION_KEY_FOOTER_HEADING = "footerHeading";
+
+			/**
+			 * {@linkplain #sectionKeys() Section key} to {@linkplain #sectionMap() control}
+			 * the {@linkplain IHelpSectionRenderer section renderer} for the Header
+			 * section. The default renderer for this section calls
+			 * {@link Help#header(Object...)}.
+			 * 
+			 * @since 3.9
+			 */
+			public static final String SECTION_KEY_HEADER = "header";
+
+			/**
+			 * {@linkplain #sectionKeys() Section key} to {@linkplain #sectionMap() control}
+			 * the {@linkplain IHelpSectionRenderer section renderer} for the Header Heading
+			 * section. The default renderer for this section calls
+			 * {@link Help#headerHeading(Object...)}.
+			 * 
+			 * @since 3.9
+			 */
+			public static final String SECTION_KEY_HEADER_HEADING = "headerHeading";
+
+			/**
+			 * {@linkplain #sectionKeys() Section key} to {@linkplain #sectionMap() control}
+			 * the {@linkplain IHelpSectionRenderer section renderer} for the Option List
+			 * section. The default renderer for this section calls
+			 * {@link Help#optionList()}.
+			 * 
+			 * @since 3.9
+			 */
+			public static final String SECTION_KEY_OPTION_LIST = "optionList";
+
+			/**
+			 * {@linkplain #sectionKeys() Section key} to {@linkplain #sectionMap() control}
+			 * the {@linkplain IHelpSectionRenderer section renderer} for the Option List
+			 * Heading section. The default renderer for this section calls
+			 * {@link Help#optionListHeading(Object...)}.
+			 * 
+			 * @since 3.9
+			 */
+			public static final String SECTION_KEY_OPTION_LIST_HEADING = "optionListHeading";
+
+			/**
+			 * {@linkplain #sectionKeys() Section key} to {@linkplain #sectionMap() control}
+			 * the {@linkplain IHelpSectionRenderer section renderer} for the Parameter List
+			 * section. The default renderer for this section calls
+			 * {@link Help#parameterList()}.
+			 * 
+			 * @since 3.9
+			 */
+			public static final String SECTION_KEY_PARAMETER_LIST = "parameterList";
+
+			/**
+			 * {@linkplain #sectionKeys() Section key} to {@linkplain #sectionMap() control}
+			 * the {@linkplain IHelpSectionRenderer section renderer} for the Parameter List
+			 * Heading section. The default renderer for this section calls
+			 * {@link Help#parameterListHeading(Object...)}.
+			 * 
+			 * @since 3.9
+			 */
+			public static final String SECTION_KEY_PARAMETER_LIST_HEADING = "parameterListHeading";
+
+			/**
+			 * {@linkplain #sectionKeys() Section key} to {@linkplain #sectionMap() control}
+			 * the {@linkplain IHelpSectionRenderer section renderer} for the Synopsis
+			 * section. The default renderer for this section calls
+			 * {@link Help#synopsis(int)}.
+			 * 
+			 * @since 3.9
+			 */
+			public static final String SECTION_KEY_SYNOPSIS = "synopsis";
+			/**
+			 * {@linkplain #sectionKeys() Section key} to {@linkplain #sectionMap() control}
+			 * the {@linkplain IHelpSectionRenderer section renderer} for the Synopsis
+			 * Heading section. The default renderer for this section calls
+			 * {@link Help#synopsisHeading(Object...)}.
+			 * 
+			 * @since 3.9
+			 */
+			public static final String SECTION_KEY_SYNOPSIS_HEADING = "synopsisHeading";
 
 			private static int detectTerminalWidth() {
 				final long start = System.nanoTime();
@@ -19892,7 +19892,30 @@ public class CommandLine {
 				return sysPropAutoWidth || (autoWidthEnabledInApplication && !isNumeric(userValue));
 			}
 
+			private Boolean abbreviateSynopsis;
+			private Boolean adjustLineBreaksForWideCJKCharacters;
+			private Boolean autoWidth;
+			private Integer cachedTerminalWidth;
+			private String commandListHeading;
+			private String[] customSynopsis;
+			private String[] description;
+			private String descriptionHeading;
+			private Map<String, String> exitCodeList;
+			private String exitCodeListHeading;
+			private String[] exitCodeListStrings;
+			private String[] footer;
+			private String footerHeading;
+			private String[] header;
+			private String headerHeading;
 			private IHelpFactory helpFactory;
+			private Map<String, IHelpSectionRenderer> helpSectionRendererMap = createHelpSectionRendererMap();
+			private Boolean hidden;
+			private final Interpolator interpolator;
+			private Integer longOptionsMaxWidth;
+			private Messages messages;
+			private String optionListHeading;
+			private String parameterListHeading;
+			private Character requiredOptionMarker;
 			private List<String> sectionKeys = Collections.unmodifiableList(Arrays.asList(SECTION_KEY_HEADER_HEADING,
 					SECTION_KEY_HEADER, SECTION_KEY_SYNOPSIS_HEADING, SECTION_KEY_SYNOPSIS,
 					SECTION_KEY_DESCRIPTION_HEADING, SECTION_KEY_DESCRIPTION, SECTION_KEY_PARAMETER_LIST_HEADING,
@@ -19900,43 +19923,20 @@ public class CommandLine {
 					SECTION_KEY_OPTION_LIST, SECTION_KEY_END_OF_OPTIONS, SECTION_KEY_COMMAND_LIST_HEADING,
 					SECTION_KEY_COMMAND_LIST, SECTION_KEY_EXIT_CODE_LIST_HEADING, SECTION_KEY_EXIT_CODE_LIST,
 					SECTION_KEY_FOOTER_HEADING, SECTION_KEY_FOOTER));
-			private Map<String, IHelpSectionRenderer> helpSectionRendererMap = createHelpSectionRendererMap();
-			private String[] description;
-			private String[] customSynopsis;
-			private String[] header;
-			private String[] footer;
-			private Boolean abbreviateSynopsis;
-			private Boolean sortOptions;
-			private Boolean sortSynopsis;
-			private Boolean showDefaultValues;
 			private Boolean showAtFileInUsageHelp;
+
+			private Boolean showDefaultValues;
 			private Boolean showEndOfOptionsDelimiterInUsageHelp;
-			private Boolean hidden;
-			private Boolean autoWidth;
-			private Character requiredOptionMarker;
-			private String headerHeading;
-			private String synopsisHeading;
-			private String synopsisSubcommandLabel;
+			private Boolean sortOptions;
+
+			private Boolean sortSynopsis;
 			private Double synopsisAutoIndentThreshold;
+
+			private String synopsisHeading;
 			private Integer synopsisIndent;
-			private String descriptionHeading;
-			private String parameterListHeading;
-			private String optionListHeading;
-			private String commandListHeading;
-			private String footerHeading;
 
-			private String exitCodeListHeading;
-			private String[] exitCodeListStrings;
-			private Map<String, String> exitCodeList;
-
+			private String synopsisSubcommandLabel;
 			private Integer width;
-			private Integer longOptionsMaxWidth;
-
-			private Integer cachedTerminalWidth;
-			private final Interpolator interpolator;
-
-			private Messages messages;
-			private Boolean adjustLineBreaksForWideCJKCharacters;
 
 			public UsageMessageSpec() {
 				this(null);
@@ -22007,8 +22007,8 @@ public class CommandLine {
 			return new ParameterException(cmd, msg, ex, null, arg);
 		}
 
-		protected final CommandLine commandLine;
 		private ArgSpec argSpec = null;
+		protected final CommandLine commandLine;
 
 		private String value = null;
 
@@ -22576,23 +22576,23 @@ public class CommandLine {
 		/** Builds immutable {@code ParseResult} instances. */
 		public static class Builder {
 			private final CommandSpec commandSpec;
+			private final List<Exception> errors = new ArrayList<Exception>(1);
+			private final List<String> expandedArgList = new ArrayList<String>();
+			private int firstUnmatchedPosition = Integer.MAX_VALUE;
+			private final GroupMatchContainer groupMatchContainer = new GroupMatchContainer(null, null);
+			boolean isInitializingDefaultValues;
 			private final List<ArgSpec> matchedArgsList = new ArrayList<ArgSpec>();
 			private final List<OptionSpec> matchedOptionsList = new ArrayList<OptionSpec>();
 			private final List<PositionalParamSpec> matchedPositionalsList = new ArrayList<PositionalParamSpec>();
+			private List<Object> nowProcessing;
 			private final Set<OptionSpec> options = new LinkedHashSet<OptionSpec>();
-			private final Set<PositionalParamSpec> positionals = new LinkedHashSet<PositionalParamSpec>();
-			private final List<String> unmatched = new ArrayList<String>();
-			private int firstUnmatchedPosition = Integer.MAX_VALUE;
 			private final List<String> originalArgList = new ArrayList<String>();
-			private final List<String> expandedArgList = new ArrayList<String>();
 			private final List<List<PositionalParamSpec>> positionalParams = new ArrayList<List<PositionalParamSpec>>();
+			private final Set<PositionalParamSpec> positionals = new LinkedHashSet<PositionalParamSpec>();
 			private final List<ParseResult> subcommands = new ArrayList<ParseResult>();
+			private final List<String> unmatched = new ArrayList<String>();
 			private boolean usageHelpRequested;
 			private boolean versionHelpRequested;
-			boolean isInitializingDefaultValues;
-			private final List<Exception> errors = new ArrayList<Exception>(1);
-			private List<Object> nowProcessing;
-			private final GroupMatchContainer groupMatchContainer = new GroupMatchContainer(null, null);
 
 			private Builder(CommandSpec spec) {
 				commandSpec = Assert.notNull(spec, "commandSpec");
@@ -22827,19 +22827,19 @@ public class CommandLine {
 		 * @since 4.0
 		 */
 		public static class GroupMatch {
-			int position;
-			final int startPosition;
 			final GroupMatchContainer container;
-
 			Map<ArgGroupSpec, GroupMatchContainer> matchedSubgroups = new LinkedHashMap<ArgGroupSpec, GroupMatchContainer>(
 					2); // preserve order: used in toString()
 			Map<ArgSpec, List<Object>> matchedValues = new IdentityHashMap<ArgSpec, List<Object>>(); // identity map for
-																										// performance
-			Map<ArgSpec, List<String>> originalStringValues = new LinkedHashMap<ArgSpec, List<String>>(); // preserve
-																											// order:
-																											// used in
-																											// toString()
+
+			// order:
+			// used in
+			// toString()
 			Map<ArgSpec, Map<Integer, List<Object>>> matchedValuesAtPosition = new IdentityHashMap<ArgSpec, Map<Integer, List<Object>>>();
+			// performance
+			Map<ArgSpec, List<String>> originalStringValues = new LinkedHashMap<ArgSpec, List<String>>(); // preserve
+			int position;
+			final int startPosition;
 			private GroupValidationResult validationResult;
 
 			GroupMatch(GroupMatchContainer container) {
@@ -23080,9 +23080,9 @@ public class CommandLine {
 		 */
 		public static class GroupMatchContainer {
 			private final ArgGroupSpec group;
+			private final List<GroupMatch> matches = new ArrayList<GroupMatch>();
 			private GroupMatchContainer parentContainer;
 			private final List<ArgGroupSpec> unmatchedSubgroups = new ArrayList<ArgGroupSpec>();
-			private final List<GroupMatch> matches = new ArrayList<GroupMatch>();
 			private GroupValidationResult validationResult;
 
 			GroupMatchContainer(ArgGroupSpec group, CommandLine cmd) {
@@ -23512,11 +23512,11 @@ public class CommandLine {
 
 		static class GroupValidationResult {
 			enum Type {
-				SUCCESS_PRESENT, SUCCESS_ABSENT, FAILURE_PRESENT, FAILURE_ABSENT, FAILURE_PARTIAL
+				FAILURE_ABSENT, FAILURE_PARTIAL, FAILURE_PRESENT, SUCCESS_ABSENT, SUCCESS_PRESENT
 			}
 
-			static final GroupValidationResult SUCCESS_PRESENT = new GroupValidationResult(Type.SUCCESS_PRESENT);
 			static final GroupValidationResult SUCCESS_ABSENT = new GroupValidationResult(Type.SUCCESS_ABSENT);
+			static final GroupValidationResult SUCCESS_PRESENT = new GroupValidationResult(Type.SUCCESS_PRESENT);
 
 			static GroupValidationResult extractBlockingFailure(List<GroupValidationResult> set) {
 				for (final GroupValidationResult element : set) {
@@ -23527,9 +23527,9 @@ public class CommandLine {
 				return null;
 			}
 
-			Type type;
-
 			ParameterException exception;
+
+			Type type;
 
 			GroupValidationResult(Type type) {
 				this.type = type;
@@ -23568,22 +23568,22 @@ public class CommandLine {
 		}
 
 		private final CommandSpec commandSpec;
-		private final Set<OptionSpec> matchedUniqueOptions;
-		private final Set<PositionalParamSpec> matchedUniquePositionals;
+		private final List<Exception> errors;
+		private final List<String> expandedArgs;
+		private final GroupMatchContainer groupMatchContainer;
 		private final List<ArgSpec> matchedArgs;
 		private final List<OptionSpec> matchedOptions;
-		private final List<PositionalParamSpec> matchedPositionals;
-		private final List<String> originalArgs;
-		private final List<String> expandedArgs;
-		private final List<String> unmatched;
-
 		private final List<List<PositionalParamSpec>> matchedPositionalParams;
-		private final List<Exception> errors;
+		private final List<PositionalParamSpec> matchedPositionals;
+		private final Set<OptionSpec> matchedUniqueOptions;
 
-		private final GroupMatchContainer groupMatchContainer;
+		private final Set<PositionalParamSpec> matchedUniquePositionals;
+		private final List<String> originalArgs;
+
 		private final List<ParseResult> subcommands;
-
 		final List<Object> tentativeMatch;
+
+		private final List<String> unmatched;
 
 		private final boolean usageHelpRequested;
 		private final boolean versionHelpRequested;
@@ -24183,9 +24183,9 @@ public class CommandLine {
 			return prefixed;
 		}
 
-		private Properties properties;
-
 		private String location;
+
+		private Properties properties;
 
 		/**
 		 * Default constructor, used when this default value provider is specified in
@@ -24505,19 +24505,19 @@ public class CommandLine {
 			return new Range(min, max, variable, unspecified, unspecified ? null : range);
 		}
 
-		/** @deprecated use {@link #min()} instead */
-		@Deprecated
-		public final int min;
-		/** @deprecated use {@link #max()} instead */
-		@Deprecated
-		public final int max;
+		private final int anchor;
+		private final boolean isUnspecified;
 		/** @deprecated use {@link #isVariable()} instead */
 		@Deprecated
 		public final boolean isVariable;
-		private final boolean isUnspecified;
+		/** @deprecated use {@link #max()} instead */
+		@Deprecated
+		public final int max;
+		/** @deprecated use {@link #min()} instead */
+		@Deprecated
+		public final int min;
 		private final String originalValue;
 		private final boolean relative;
-		private final int anchor;
 
 		/**
 		 * Constructs a new Range object with the specified parameters.
@@ -25376,13 +25376,13 @@ public class CommandLine {
 	 * @since 4.3
 	 */
 	public enum ScopeType {
-		/** The element only exists in the current command. */
-		LOCAL,
 		/**
 		 * The element exists in the command where the element is defined and all
 		 * descendents (subcommands, sub-subcommands, etc.).
 		 */
 		INHERIT,
+		/** The element only exists in the current command. */
+		LOCAL,
 	}
 
 	/**
@@ -25413,18 +25413,18 @@ public class CommandLine {
 		 */
 		enum Target {
 			/**
-			 * Injects the {@code CommandSpec} of the command where this
-			 * {@code @Spec}-annotated program element is declared.
-			 */
-			SELF,
-			/**
 			 * Injects the {@code CommandSpec} of the "mixee" command that receives the
 			 * options and other command elements defined here, or {@code null} if this
 			 * commands is not {@linkplain Mixin mixed into} another command. The "mixee"
 			 * command has a {@code @Mixin}-annotated program element with the type of the
 			 * class where this {@code @Spec}-annotated program element is declared.
 			 */
-			MIXEE
+			MIXEE,
+			/**
+			 * Injects the {@code CommandSpec} of the command where this
+			 * {@code @Spec}-annotated program element is declared.
+			 */
+			SELF
 		}
 
 		/**
@@ -25445,7 +25445,7 @@ public class CommandLine {
 	 * @since 4.7.6-SNAPSHOT
 	 */
 	public enum TraceLevel {
-		OFF, WARN, INFO, DEBUG;
+		DEBUG, INFO, OFF, WARN;
 
 		static TraceLevel lookup(String key) {
 			return key == null ? WARN
@@ -25478,9 +25478,9 @@ public class CommandLine {
 	 * @since 4.7.6-SNAPSHOT
 	 */
 	public static final class Tracer {
-		private PrintStream stream = System.err;
 		private TraceLevel level = TraceLevel.lookup(System.getProperty("picocli.trace"));
 		boolean modified;
+		private PrintStream stream = System.err;
 
 		private Tracer() {
 		}
@@ -25827,10 +25827,10 @@ public class CommandLine {
 		}
 	}
 
+	private static final Tracer TRACER = new Tracer();
+
 	/** This is picocli version {@value}. */
 	public static final String VERSION = "4.7.6-SNAPSHOT";
-
-	private static final Tracer TRACER = new Tracer();
 
 	static <K, T> void addValueToListInMap(Map<K, List<T>> map, K key, T value) {
 		List<T> values = map.get(key);
@@ -27303,31 +27303,31 @@ public class CommandLine {
 				System.getProperty("os.arch"));
 	}
 
-	private CommandSpec commandSpec;
-
-	private final Interpreter interpreter;
-	private final IFactory factory;
-	private Object executionResult;
-	private PrintWriter out;
-
-	private PrintWriter err;
-
 	private Help.ColorScheme colorScheme = Help.defaultColorScheme(Help.Ansi.AUTO);
-	private IExitCodeExceptionMapper exitCodeExceptionMapper;
+
+	private CommandSpec commandSpec;
+	private PrintWriter err;
+	private IExecutionExceptionHandler executionExceptionHandler = new IExecutionExceptionHandler() {
+		@Override
+		public int handleExecutionException(Exception ex, CommandLine commandLine, ParseResult parseResult)
+				throws Exception {
+			throw ex;
+		}
+	};
+	private Object executionResult;
+
 	private IExecutionStrategy executionStrategy = new RunLast();
+
+	private IExitCodeExceptionMapper exitCodeExceptionMapper;
+	private final IFactory factory;
+	private final Interpreter interpreter;
+	private PrintWriter out;
 	private IParameterExceptionHandler parameterExceptionHandler = new IParameterExceptionHandler() {
 		@Override
 		public int handleParseException(ParameterException ex, String[] args) {
 			final CommandLine cmd = ex.getCommandLine();
 			DefaultExceptionHandler.internalHandleParseException(ex, cmd.getErr(), cmd.getColorScheme());
 			return mappedExitCode(ex, cmd.getExitCodeExceptionMapper(), cmd.getCommandSpec().exitCodeOnInvalidInput());
-		}
-	};
-	private IExecutionExceptionHandler executionExceptionHandler = new IExecutionExceptionHandler() {
-		@Override
-		public int handleExecutionException(Exception ex, CommandLine commandLine, ParseResult parseResult)
-				throws Exception {
-			throw ex;
 		}
 	};
 
