@@ -14,9 +14,10 @@ group = 'net.rossonet.commons'
 version = '0.5.5'
 
 ext {
-	sourceCompatibility = 21
+    sourceCompatibility = 21
     targetCompatibility = 21
-	ossrhPassword = System.getenv('OSSRH_PASSWORD')
+    ossrhPassword = System.getenv('OSSRH_PASSWORD')
+    ossrhUsername = System.getenv('OSSRH_USERNAME')
 }
 
 repositories {
