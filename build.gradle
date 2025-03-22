@@ -45,7 +45,7 @@ dependencies {
   // crittografia
   implementation group: 'org.bouncycastle', name: 'bcprov-jdk18on', version: '1.77'
   implementation group: 'org.bouncycastle', name: 'bcpkix-jdk18on', version: '1.77'
-  implementation group: 'org.bouncycastle', name: 'bcutil-jdk18on', version: '1.77'
+  implementation group: 'org.bouncycastle', name: 'bcutil-jdk18on', version: '1.79'
   // rules
   implementation group: 'org.apache.commons', name: 'commons-jexl3', version: '3.4.0'
   implementation group: 'org.mvel', name: 'mvel2', version: '2.5.1.Final'
