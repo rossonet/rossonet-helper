@@ -43,7 +43,7 @@ import oshi.util.Util;
  * need oshi lib. implementation group: 'com.github.oshi', name: 'oshi-core',
  * version: '6.4.7'
  * 
- * @Author Andrea Ambrosini - Rossonet s.c.a.r.l.
+ * Andrea Ambrosini - Rossonet s.c.a.r.l.
  *
  */
 public class SystemInfoHelper {

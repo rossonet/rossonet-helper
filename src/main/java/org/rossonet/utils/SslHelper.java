@@ -82,7 +82,7 @@ import org.bouncycastle.pkcs.PKCS10CertificationRequestBuilder;
  * version: '1.76' implementation group: 'org.bouncycastle', name:
  * 'bcutil-jdk18on', version: '1.76'
  * 
- * @Author Andrea Ambrosini - Rossonet s.c.a.r.l.
+ * Andrea Ambrosini - Rossonet s.c.a.r.l.
  *
  */
 public class SslHelper {

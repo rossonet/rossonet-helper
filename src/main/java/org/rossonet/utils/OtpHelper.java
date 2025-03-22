@@ -1,17 +1,4 @@
-/**
-    This program is free software: you can redistribute it and/or modify
-    it under the terms of the GNU Affero General Public License as published
-    by the Free Software Foundation, either version 3 of the License, or
-    (at your option) any later version.
 
-    This program is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU Affero General Public License for more details.
-
-    You should have received a copy of the GNU Affero General Public License
-    along with this program.  If not, see <http://www.gnu.org/licenses/>.
-    */
 package org.rossonet.utils;
 
 import java.lang.reflect.UndeclaredThrowableException;
@@ -97,8 +84,9 @@ public final class OtpHelper {
 	private static byte[] hexStr2Bytes(final String hex) {
 		final byte[] bArray = new BigInteger("10" + hex, 16).toByteArray();
 		final byte[] ret = new byte[bArray.length - 1];
-		for (int i = 0; i < ret.length; i++)
+		for (int i = 0; i < ret.length; i++) {
 			ret[i] = bArray[i + 1];
+		}
 		return ret;
 	}
 
