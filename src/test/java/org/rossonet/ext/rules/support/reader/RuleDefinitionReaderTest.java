@@ -24,6 +24,7 @@
 package org.rossonet.ext.rules.support.reader;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import java.io.File;
 import java.io.FileReader;
@@ -48,11 +49,11 @@ public class RuleDefinitionReaderTest {
 				{ new JsonRuleDefinitionReader(), "json" }, });
 	}
 
-	// @Parameterized.Parameter(0)
-	public RuleDefinitionReader ruleDefinitionReader;
-
 	// @Parameterized.Parameter(1)
 	public String fileExtension;
+
+	// @Parameterized.Parameter(0)
+	public RuleDefinitionReader ruleDefinitionReader;
 
 	@Test
 	public void testEmptyRulesDefinitionReading() throws Exception {
@@ -69,27 +70,35 @@ public class RuleDefinitionReaderTest {
 	@SuppressWarnings("unused")
 	@Test // (expected = IllegalArgumentException.class)
 	public void testInvalidRuleDefinitionReading_whenNoActions() throws Exception {
-		// given
-		final File adultRuleDescriptor = new File("src/test/resources/adult-rule-without-actions." + fileExtension);
+		final IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> {
 
-		// when
-		final List<RuleDefinition> ruleDefinitions = ruleDefinitionReader.read(new FileReader(adultRuleDescriptor));
+			// given
+			final File adultRuleDescriptor = new File("src/test/resources/adult-rule-without-actions." + fileExtension);
 
-		// then
-		// expected exception
+			// when
+			final List<RuleDefinition> ruleDefinitions = ruleDefinitionReader.read(new FileReader(adultRuleDescriptor));
+
+			// then
+			// expected exception
+		});
+
 	}
 
 	@SuppressWarnings("unused")
 	@Test // (expected = IllegalArgumentException.class)
 	public void testInvalidRuleDefinitionReading_whenNoCondition() throws Exception {
-		// given
-		final File adultRuleDescriptor = new File("src/test/resources/adult-rule-without-condition." + fileExtension);
+		final IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> {
+			// given
+			final File adultRuleDescriptor = new File(
+					"src/test/resources/adult-rule-without-condition." + fileExtension);
 
-		// when
-		final List<RuleDefinition> ruleDefinitions = ruleDefinitionReader.read(new FileReader(adultRuleDescriptor));
+			// when
+			final List<RuleDefinition> ruleDefinitions = ruleDefinitionReader.read(new FileReader(adultRuleDescriptor));
 
-		// then
-		// expected exception
+			// then
+			// expected exception
+		});
+
 	}
 
 	@Test

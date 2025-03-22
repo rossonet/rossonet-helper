@@ -24,6 +24,7 @@
 package org.rossonet.ext.rules.api;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -167,6 +168,9 @@ public class RulesTest {
 
 	@Test // (expected = NullPointerException.class)
 	public void whenRegisterNullRule_thenShouldThrowNullPointerException() {
-		rules.register(null);
+		final NullPointerException exception = assertThrows(NullPointerException.class, () -> {
+			rules.register(null);
+		});
+
 	}
 }
