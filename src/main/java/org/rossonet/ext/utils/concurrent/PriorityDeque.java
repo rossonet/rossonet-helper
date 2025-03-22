@@ -35,20 +35,13 @@ import java.util.SortedSet;
  */
 public class PriorityDeque<E> extends AbstractQueue<E> implements Deque<E>, Serializable {
 	private final class Itr implements Iterator<E> {
-		private boolean desc = false;
-
 		/**
 		 * Index (into queue array) of element to be returned by subsequent call to
 		 * next.
 		 */
 		private int cursor = 0;
 
-		/**
-		 * Index of element returned by most recent call to next, unless that element
-		 * came from the forgetMeNot list. Set to -1 if element is deleted by a call to
-		 * remove.
-		 */
-		private int lastRet = -1;
+		private boolean desc = false;
 
 		/**
 		 * The modCount value that the iterator believes that the backing Queue should
@@ -56,6 +49,13 @@ public class PriorityDeque<E> extends AbstractQueue<E> implements Deque<E>, Seri
 		 * modification.
 		 */
 		private int expectedModCount = modCount;
+
+		/**
+		 * Index of element returned by most recent call to next, unless that element
+		 * came from the forgetMeNot list. Set to -1 if element is deleted by a call to
+		 * remove.
+		 */
+		private int lastRet = -1;
 
 		private Itr(boolean desc) {
 			this.desc = desc;
@@ -118,14 +118,14 @@ public class PriorityDeque<E> extends AbstractQueue<E> implements Deque<E>, Seri
 	}
 
 	private static enum Level {
-		MIN, MAX
+		MAX, MIN
 	}
 
+	private static final int DEFAULT_INITIAL_CAPACITY = 11;
+
+	private static final int MAX_ARRAY_SIZE = Integer.MAX_VALUE - 8;;
+
 	private static final long serialVersionUID = -5410497035045299533L;
-
-	private static final int DEFAULT_INITIAL_CAPACITY = 11;;
-
-	private static final int MAX_ARRAY_SIZE = Integer.MAX_VALUE - 8;
 
 	@SuppressWarnings("unchecked")
 	private static <T> void bubbleUp(final Object[] deque, final int size, int index) {
@@ -522,13 +522,13 @@ public class PriorityDeque<E> extends AbstractQueue<E> implements Deque<E>, Seri
 		}
 	}
 
-	private transient Object[] deque;
-
 	private final Comparator<? super E> comparator;
 
-	private int size = 0;
+	private transient Object[] deque;
 
 	private transient int modCount = 0;
+
+	private int size = 0;
 
 	public PriorityDeque() {
 		this(DEFAULT_INITIAL_CAPACITY, null);
@@ -955,16 +955,14 @@ public class PriorityDeque<E> extends AbstractQueue<E> implements Deque<E>, Seri
 	 * circumstances, be used to save allocation costs.
 	 * 
 	 * <p>
-	 * Suppose <tt>x</tt> is a queue known to contain only strings. The following
-	 * code can be used to dump the queue into a newly allocated array of
-	 * <tt>String</tt>:
+	 * Suppose x is a queue known to contain only strings. The following code can be
+	 * used to dump the queue into a newly allocated array of String:
 	 * 
 	 * <pre>
 	 * String[] y = x.toArray(new String[0]);
 	 * </pre>
 	 * 
-	 * Note that <tt>toArray(new Object[0])</tt> is identical in function to
-	 * <tt>toArray()</tt>.
+	 * Note that toArray(new Object[0]) is identical in function to toArray().
 	 * 
 	 * @param a the array into which the elements of the queue are to be stored, if
 	 *          it is big enough; otherwise, a new array of the same runtime type is
