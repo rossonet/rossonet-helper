@@ -163,8 +163,8 @@ publishing {
       url = "https://oss.sonatype.org/service/local/staging/deploy/maven2/"
       name = "sonatype"
       credentials {
-        username "rossonet"
-        password "${ossrhPassword}"
+        username "${project.ext.ossrhUsername}"
+        password "${project.ext.ossrhPassword}"
       }
     }
   }
