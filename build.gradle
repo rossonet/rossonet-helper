@@ -64,7 +64,7 @@ dependencies {
   implementation 'org.apache.sshd:sshd-common:2.13.1'
   // Opc UA Milo https://github.com/eclipse/milo
   //implementation group: 'org.eclipse.milo', name: 'sdk-client', version: '0.6.12'
-  implementation group: 'org.eclipse.milo', name: 'sdk-server', version: '0.6.12'
+  implementation group: 'org.eclipse.milo', name: 'sdk-server', version: '0.6.15'
   implementation group: 'org.eclipse.milo', name: 'dictionary-manager', version: '0.6.12'
   implementation group: 'org.eclipse.milo', name: 'dictionary-reader', version: '0.6.12'
   implementation group: 'org.eclipse.milo', name: 'bsd-parser-core', version: '0.3.8'
